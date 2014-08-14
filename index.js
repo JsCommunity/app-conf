@@ -57,7 +57,7 @@ var fixPath = function fixPath(value, base) {
 //====================================================================
 
 var load = function (name, defaults) {
-  defaults || (defaults = {});
+  defaults = merge({}, defaults || {});
 
   return Promise.each(entries, function (entry) {
     return entry.read({
@@ -69,12 +69,10 @@ var load = function (name, defaults) {
       ).then(function (value) {
         return fixPath(value, dirname(file.path));
       }).then(function (value) {
-        defaults = merge(value, defaults);
+        merge(defaults, value);
       });
     });
-  }).then(function () {
-    return defaults;
-  });
+  }).return(defaults);
 };
 
 //====================================================================
