@@ -9,7 +9,7 @@ var dirname = require('path').dirname;
 var getFileStats = Promise.promisify(require('fs').stat);
 var resolvePath = require('path').resolve;
 
-var assign = require('lodash.assign');
+var merge = require('lodash.merge');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
 var map = require('lodash.map');
@@ -69,7 +69,7 @@ var load = function (name, defaults) {
       ).then(function (value) {
         return fixPath(value, dirname(file.path));
       }).then(function (value) {
-        defaults = assign(value, defaults);
+        defaults = merge(value, defaults);
       });
     });
   }).then(function () {

@@ -25,13 +25,13 @@
   "dependencies": {
     "bluebird": "^2.2.2",
     "glob": "^4.0.5",
-    "lodash.assign": "^2.4.1",
     "lodash.findkey": "^2.4.1",
     "lodash.flatten": "^2.4.1",
     "lodash.isobject": "^2.4.1",
     "lodash.isstring": "^2.4.1",
     "lodash.keys": "^2.4.1",
     "lodash.map": "^2.4.1",
+    "lodash.merge": "^2.4.1",
     "strip-json-comments": "^1.0.1"
   },
   "optionalDependencies": {
