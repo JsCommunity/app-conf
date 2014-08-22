@@ -25,6 +25,9 @@ var readFile = function (path) {
 
 // Default configuration entries.
 module.exports = [
+
+  // Configuration of the current project (local to the file
+  // hierarchy).
   {
     name: 'local',
     read: function (opts) {
@@ -47,6 +50,7 @@ module.exports = [
     }
   },
 
+  // Configuration for the current user.
   {
     name: 'global',
     read: function (opts) {
@@ -60,6 +64,7 @@ module.exports = [
     }
   },
 
+  // Configuration for the whole system.
   {
     name: 'system',
     read: function (opts) {
@@ -70,5 +75,18 @@ module.exports = [
         readFile
       );
     }
+  },
+
+  // Default vendor configuration.
+  {
+    name: 'vendor',
+    read: function () {
+      // It is assumed that app-conf is in the `node_modules`
+      // directory of the owner package.
+      return Promise.map(
+        glob(__dirname +'/../../config.*'),
+        readFile
+      );
+    },
   },
 ];
