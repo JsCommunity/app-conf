@@ -12,14 +12,20 @@ var glob = Promise.promisify(require('glob'));
 
 //====================================================================
 
-var readFile = function (path) {
+function readFile(path) {
   return fs$readFile(path).then(function (buffer) {
     return {
       path: path,
       content: buffer,
     };
   });
-};
+}
+
+function ignoreAccessErrors(error) {
+  if (error.cause.code !== 'EACCES') {
+    throw error;
+  }
+}
 
 //====================================================================
 
@@ -45,7 +51,7 @@ module.exports = [
       }
 
       return Promise.map(paths, function (path) {
-        return glob(path);
+        return glob(path).catch(ignoreAccessErrors);
       }).then(flatten).map(readFile);
     }
   },
