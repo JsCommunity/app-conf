@@ -25,6 +25,8 @@ function ignoreAccessErrors(error) {
   if (error.cause.code !== 'EACCES') {
     throw error;
   }
+
+  return [];
 }
 
 //====================================================================
