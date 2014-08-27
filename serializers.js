@@ -90,7 +90,7 @@ var unserialize = function (file, format) {
   format || (format = detectFormat(file));
 
   if (!format) {
-    throw new Error('no compatible format found');
+    throw new Error('no compatible format found for '+ file);
   }
 
   return serializers[format].unserialize(file);

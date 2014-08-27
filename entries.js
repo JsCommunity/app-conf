@@ -53,7 +53,9 @@ module.exports = [
       }
 
       return Promise.map(paths, function (path) {
-        return glob(path).catch(ignoreAccessErrors);
+        return glob(path, {
+          silent: true,
+        }).catch(ignoreAccessErrors);
       }).then(flatten).map(readFile);
     }
   },
