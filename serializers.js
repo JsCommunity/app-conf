@@ -5,6 +5,8 @@
 var findKey = require('lodash.findkey');
 var stripJsonComments = require('strip-json-comments');
 
+var UnknownFormatError = require('./unknown-format-error');
+
 //====================================================================
 
 var serializers = Object.create(null);
@@ -90,7 +92,7 @@ var unserialize = function (file, format) {
   format || (format = detectFormat(file));
 
   if (!format) {
-    throw new Error('no compatible format found for '+ file);
+    throw new UnknownFormatError('no compatible format found for '+ file.path);
   }
 
   return serializers[format].unserialize(file);

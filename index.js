@@ -16,6 +16,7 @@ var map = require('lodash.map');
 
 var entries = require('./entries');
 var serializers = require('./serializers');
+var UnknownFormatError = require('./unknown-format-error');
 
 //====================================================================
 
@@ -53,11 +54,20 @@ var fixPath = function fixPath(value, base) {
   return Promise.resolve(value);
 };
 
+function noop() {}
+function rethrow(error) {
+  throw error;
+}
 
 //====================================================================
 
-var load = function (name, defaults) {
-  defaults = merge({}, defaults || {});
+var load = function (name, opts) {
+  opts || (opts = {});
+
+  var defaults = merge({}, opts.defaults || {});
+  var ignoreUnknownFormats = opts.ignoreUnknownFormats;
+
+  var unknownFormatHandler = ignoreUnknownFormats ? noop : rethrow;
 
   return Promise.each(entries, function (entry) {
     return entry.read({
@@ -70,7 +80,7 @@ var load = function (name, defaults) {
         return fixPath(value, dirname(file.path));
       }).then(function (value) {
         merge(defaults, value);
-      });
+      }).catch(UnknownFormatError, unknownFormatHandler);
     });
   }).return(defaults);
 };
