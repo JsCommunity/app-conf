@@ -2,13 +2,13 @@
 
 //====================================================================
 
-var Promise = require('bluebird');
+var Bluebird = require('bluebird');
 
-var fs$readFile = Promise.promisify(require('fs').readFile);
+var fs$readFile = Bluebird.promisify(require('fs').readFile);
 var resolvePath = require('path').resolve;
 
 var flatten = require('lodash.flatten');
-var glob = Promise.promisify(require('glob'));
+var glob = Bluebird.promisify(require('glob'));
 
 //====================================================================
 
@@ -52,7 +52,7 @@ module.exports = [
         dir = resolvePath(dir, '..');
       }
 
-      return Promise.map(paths, function (path) {
+      return Bluebird.map(paths, function (path) {
         return glob(path, {
           silent: true,
         }).catch(ignoreAccessErrors);
@@ -67,7 +67,7 @@ module.exports = [
       var name = opts.name;
       var home = process.env.HOME;
 
-      return Promise.map(
+      return Bluebird.map(
         glob(home +'/.config/'+ name +'/config.*'),
         readFile
       );
@@ -80,7 +80,7 @@ module.exports = [
     read: function (opts) {
       var name = opts.name;
 
-      return Promise.map(
+      return Bluebird.map(
         glob('/etc/'+ name +'/config.*'),
         readFile
       );
@@ -93,7 +93,7 @@ module.exports = [
     read: function () {
       // It is assumed that app-conf is in the `node_modules`
       // directory of the owner package.
-      return Promise.map(
+      return Bluebird.map(
         glob(__dirname +'/../../config.*'),
         readFile
       );

@@ -2,11 +2,11 @@
 
 //====================================================================
 
-var Promise = require('bluebird');
-Promise.longStackTraces();
+var Bluebird = require('bluebird');
+Bluebird.longStackTraces();
 
 var dirname = require('path').dirname;
-var getFileStats = Promise.promisify(require('fs').stat);
+var getFileStats = Bluebird.promisify(require('fs').stat);
 var resolvePath = require('path').resolve;
 
 var merge = require('lodash.merge');
@@ -48,10 +48,10 @@ var fixPath = function fixPath(value, base) {
         value[key] = item;
       });
     });
-    return Promise.all(promises).return(value);
+    return Bluebird.all(promises).return(value);
   }
 
-  return Promise.resolve(value);
+  return Bluebird.resolve(value);
 };
 
 function noop() {}
@@ -69,11 +69,11 @@ var load = function (name, opts) {
 
   var unknownFormatHandler = ignoreUnknownFormats ? noop : rethrow;
 
-  return Promise.each(entries, function (entry) {
+  return Bluebird.each(entries, function (entry) {
     return entry.read({
       name: name,
     }).each(function (file) {
-      return Promise.try(
+      return Bluebird.try(
         serializers.unserialize,
         [file]
       ).then(function (value) {
