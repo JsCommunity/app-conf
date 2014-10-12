@@ -5,10 +5,12 @@
 var Bluebird = require('bluebird');
 
 var fs$readFile = Bluebird.promisify(require('fs').readFile);
+var j = require('path').join;
 var resolvePath = require('path').resolve;
 
 var flatten = require('lodash.flatten');
 var glob = Bluebird.promisify(require('glob'));
+var xdgBasedir = require('xdg-basedir');
 
 //====================================================================
 
@@ -47,7 +49,7 @@ module.exports = [
       var dir, prev;
       dir = process.cwd();
       while (dir !== prev) {
-        paths.push(dir +'/.'+ name +'.*');
+        paths.push(j(dir, '/'+ name +'.*'));
         prev = dir;
         dir = resolvePath(dir, '..');
       }
@@ -65,10 +67,9 @@ module.exports = [
     name: 'global',
     read: function (opts) {
       var name = opts.name;
-      var home = process.env.HOME;
 
       return Bluebird.map(
-        glob(home +'/.config/'+ name +'/config.*'),
+        glob(j(xdgBasedir.config, name, 'config.*')),
         readFile
       );
     }
@@ -81,7 +82,7 @@ module.exports = [
       var name = opts.name;
 
       return Bluebird.map(
-        glob('/etc/'+ name +'/config.*'),
+        glob(j('/etc', name, 'config.*')),
         readFile
       );
     }
@@ -94,7 +95,7 @@ module.exports = [
       // It is assumed that app-conf is in the `node_modules`
       // directory of the owner package.
       return Bluebird.map(
-        glob(__dirname +'/../../config.*'),
+        glob(j(__dirname, '..', '..', 'config.*')),
         readFile
       );
     },
