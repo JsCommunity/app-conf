@@ -20,15 +20,15 @@ var UnknownFormatError = require('./unknown-format-error');
 
 //====================================================================
 
-var isPath = function (path) {
+function isPath(path) {
   return getFileStats(path).then(function () {
     return true;
   }).catch(function () {
     return false;
   });
-};
+}
 
-var fixPath = function fixPath(value, base) {
+function fixPath(value, base) {
   var path;
 
   if (isString(value)) {
@@ -52,16 +52,17 @@ var fixPath = function fixPath(value, base) {
   }
 
   return Bluebird.resolve(value);
-};
+}
 
 function noop() {}
+
 function rethrow(error) {
   throw error;
 }
 
 //====================================================================
 
-var load = function (name, opts) {
+function load(name, opts) {
   opts || (opts = {});
 
   var defaults = merge({}, opts.defaults || {});
@@ -83,7 +84,7 @@ var load = function (name, opts) {
       }).catch(UnknownFormatError, unknownFormatHandler);
     });
   }).return(defaults);
-};
+}
 
 //====================================================================
 
