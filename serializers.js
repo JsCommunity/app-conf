@@ -3,7 +3,15 @@
 //====================================================================
 
 var findKey = require('lodash.findkey');
-var stripJsonComments = require('strip-json-comments');
+
+var stripJsonComments;
+try {
+  stripJsonComments = require('strip-json-comments');
+} catch (error) {
+  stripJsonComments = function identity(val) {
+    return val;
+  };
+}
 
 var UnknownFormatError = require('./unknown-format-error');
 
