@@ -49,7 +49,7 @@ module.exports = [
       var dir, prev;
       dir = process.cwd();
       while (dir !== prev) {
-        paths.push(j(dir, '/'+ name +'.*'));
+        paths.push(j(dir, '.' + name + '.*'));
         prev = dir;
         dir = resolvePath(dir, '..');
       }
