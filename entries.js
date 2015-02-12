@@ -4,7 +4,7 @@
 
 var Bluebird = require('bluebird');
 
-var fs$readFile = Bluebird.promisify(require('fs').readFile);
+var fs$readFile = require('fs-promise').readFile;
 var j = require('path').join;
 var resolvePath = require('path').resolve;
 

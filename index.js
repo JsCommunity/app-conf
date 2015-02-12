@@ -6,7 +6,7 @@ var Bluebird = require('bluebird');
 Bluebird.longStackTraces();
 
 var dirname = require('path').dirname;
-var getFileStats = Bluebird.promisify(require('fs').stat);
+var getFileStats = require('fs-promise').stat;
 var resolvePath = require('path').resolve;
 
 var merge = require('lodash.merge');
