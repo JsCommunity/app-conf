@@ -66,10 +66,15 @@ module.exports = [
   {
     name: 'global',
     read: function (opts) {
+      var configDir = xdgBasedir.config;
+      if (!configDir) {
+        return Bluebird.resolve([]);
+      }
+
       var name = opts.name;
 
       return Bluebird.map(
-        glob(j(xdgBasedir.config, name, 'config.*')),
+        glob(j(configDir, name, 'config.*')),
         readFile
       );
     }
