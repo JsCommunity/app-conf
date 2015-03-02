@@ -4,7 +4,7 @@
   "description": "",
   "keywords": [],
   "scripts": {
-    "test": "mocha index.spec.js"
+    "test": "mocha --require must index.spec.js"
   },
   "repository": {
     "type": "git",
@@ -14,11 +14,15 @@
   "author": "Julien Fontanet <julien.fontanet@isonoe.net> (http://julien.isonoe.net/)",
   "license": "ISC",
   "devDependencies": {
-    "chai": "^1.9.1",
-    "mocha": "^1.20.1"
+    "mocha": "^2.1.0",
+    "mock-fs": "^2.5.0",
+    "must": "^0.12.0"
   },
   "files": [
-    "*.js"
+    "index.js",
+    "entries.js",
+    "serializers.js",
+    "unknown-format-error.js"
   ],
   "dependencies": {
     "bluebird": "^2.2.2",
