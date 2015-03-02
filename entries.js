@@ -36,29 +36,29 @@ function ignoreAccessErrors(error) {
 // Default configuration entries.
 module.exports = [
 
-  // Configuration of the current project (local to the file
-  // hierarchy).
+  // Default vendor configuration.
   {
-    name: 'local',
+    name: 'vendor',
+    read: function () {
+      // It is assumed that app-conf is in the `node_modules`
+      // directory of the owner package.
+      return Bluebird.map(
+        glob(j(__dirname, '..', '..', 'config.*')),
+        readFile
+      );
+    },
+  },
+
+  // Configuration for the whole system.
+  {
+    name: 'system',
     read: function (opts) {
       var name = opts.name;
 
-      // Compute the list of paths from the current directory to the
-      // root directory.
-      var paths = [];
-      var dir, prev;
-      dir = process.cwd();
-      while (dir !== prev) {
-        paths.push(j(dir, '.' + name + '.*'));
-        prev = dir;
-        dir = resolvePath(dir, '..');
-      }
-
-      return Bluebird.map(paths, function (path) {
-        return glob(path, {
-          silent: true,
-        }).catch(ignoreAccessErrors);
-      }).then(flatten).map(readFile);
+      return Bluebird.map(
+        glob(j('/etc', name, 'config.*')),
+        readFile
+      );
     }
   },
 
@@ -80,29 +80,29 @@ module.exports = [
     }
   },
 
-  // Configuration for the whole system.
+  // Configuration of the current project (local to the file
+  // hierarchy).
   {
-    name: 'system',
+    name: 'local',
     read: function (opts) {
       var name = opts.name;
 
-      return Bluebird.map(
-        glob(j('/etc', name, 'config.*')),
-        readFile
-      );
-    }
-  },
+      // Compute the list of paths from the current directory to the
+      // root directory.
+      var paths = [];
+      var dir, prev;
+      dir = process.cwd();
+      while (dir !== prev) {
+        paths.push(j(dir, '.' + name + '.*'));
+        prev = dir;
+        dir = resolvePath(dir, '..');
+      }
 
-  // Default vendor configuration.
-  {
-    name: 'vendor',
-    read: function () {
-      // It is assumed that app-conf is in the `node_modules`
-      // directory of the owner package.
-      return Bluebird.map(
-        glob(j(__dirname, '..', '..', 'config.*')),
-        readFile
-      );
-    },
+      return Bluebird.map(paths.reverse(), function (path) {
+        return glob(path, {
+          silent: true,
+        }).catch(ignoreAccessErrors);
+      }).then(flatten).map(readFile);
+    }
   },
 ];
