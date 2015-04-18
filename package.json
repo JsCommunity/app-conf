@@ -27,15 +27,15 @@
   "dependencies": {
     "bluebird": "^2.2.2",
     "fs-promise": "^0.3.1",
-    "glob": "^4.0.5",
-    "lodash.findkey": "^2.4.1",
-    "lodash.flatten": "^2.4.1",
-    "lodash.isobject": "^2.4.1",
-    "lodash.isstring": "^2.4.1",
-    "lodash.keys": "^2.4.1",
-    "lodash.map": "^2.4.1",
-    "lodash.merge": "^2.4.1",
-    "make-error": "^0.3.0",
+    "glob": "^5",
+    "lodash.findkey": "^3",
+    "lodash.flatten": "^3",
+    "lodash.isobject": "^3",
+    "lodash.isstring": "^3",
+    "lodash.keys": "^3",
+    "lodash.map": "^3",
+    "lodash.merge": "^3",
+    "make-error": "^1",
     "xdg-basedir": "^1.0.0"
   }
 }
