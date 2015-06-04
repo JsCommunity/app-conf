@@ -1,37 +1,37 @@
-'use strict';
+'use strict'
 
-//====================================================================
+// ===================================================================
 
-var Bluebird = require('bluebird');
+var Bluebird = require('bluebird')
 
-var fs$readFile = require('fs-promise').readFile;
-var j = require('path').join;
-var resolvePath = require('path').resolve;
+var fs$readFile = require('fs-promise').readFile
+var j = require('path').join
+var resolvePath = require('path').resolve
 
-var flatten = require('lodash.flatten');
-var glob = Bluebird.promisify(require('glob'));
-var xdgBasedir = require('xdg-basedir');
+var flatten = require('lodash.flatten')
+var glob = Bluebird.promisify(require('glob'))
+var xdgBasedir = require('xdg-basedir')
 
-//====================================================================
+// ===================================================================
 
-function readFile(path) {
+function readFile (path) {
   return fs$readFile(path).then(function (buffer) {
     return {
       path: path,
-      content: buffer,
-    };
-  });
+      content: buffer
+    }
+  })
 }
 
-function ignoreAccessErrors(error) {
+function ignoreAccessErrors (error) {
   if (error.cause.code !== 'EACCES') {
-    throw error;
+    throw error
   }
 
-  return [];
+  return []
 }
 
-//====================================================================
+// ===================================================================
 
 // Default configuration entries.
 module.exports = [
@@ -45,20 +45,20 @@ module.exports = [
       return Bluebird.map(
         glob(j(__dirname, '..', '..', 'config.*')),
         readFile
-      );
-    },
+      )
+    }
   },
 
   // Configuration for the whole system.
   {
     name: 'system',
     read: function (opts) {
-      var name = opts.name;
+      var name = opts.name
 
       return Bluebird.map(
         glob(j('/etc', name, 'config.*')),
         readFile
-      );
+      )
     }
   },
 
@@ -66,17 +66,17 @@ module.exports = [
   {
     name: 'global',
     read: function (opts) {
-      var configDir = xdgBasedir.config;
+      var configDir = xdgBasedir.config
       if (!configDir) {
-        return Bluebird.resolve([]);
+        return Bluebird.resolve([])
       }
 
-      var name = opts.name;
+      var name = opts.name
 
       return Bluebird.map(
         glob(j(configDir, name, 'config.*')),
         readFile
-      );
+      )
     }
   },
 
@@ -85,24 +85,24 @@ module.exports = [
   {
     name: 'local',
     read: function (opts) {
-      var name = opts.name;
+      var name = opts.name
 
       // Compute the list of paths from the current directory to the
       // root directory.
-      var paths = [];
-      var dir, prev;
-      dir = process.cwd();
+      var paths = []
+      var dir, prev
+      dir = process.cwd()
       while (dir !== prev) {
-        paths.push(j(dir, '.' + name + '.*'));
-        prev = dir;
-        dir = resolvePath(dir, '..');
+        paths.push(j(dir, '.' + name + '.*'))
+        prev = dir
+        dir = resolvePath(dir, '..')
       }
 
       return Bluebird.map(paths.reverse(), function (path) {
         return glob(path, {
-          silent: true,
-        }).catch(ignoreAccessErrors);
-      }).then(flatten).map(readFile);
+          silent: true
+        }).catch(ignoreAccessErrors)
+      }).then(flatten).map(readFile)
     }
-  },
-];
+  }
+]

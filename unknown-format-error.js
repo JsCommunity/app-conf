@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-//====================================================================
+// ===================================================================
 
-var makeError = require('make-error');
+var makeError = require('make-error')
 
-//====================================================================
+// ===================================================================
 
-exports = module.exports = makeError('UnknownFormatError');
+exports = module.exports = makeError('UnknownFormatError')
