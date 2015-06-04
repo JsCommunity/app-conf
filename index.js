@@ -2,13 +2,11 @@
 
 //====================================================================
 
-var Bluebird = require('bluebird');
-Bluebird.longStackTraces();
-
 var dirname = require('path').dirname;
 var getFileStats = require('fs-promise').stat;
 var resolvePath = require('path').resolve;
 
+var Bluebird = require('bluebird');
 var flatten = require('lodash.flatten');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
