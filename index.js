@@ -7,6 +7,7 @@ var getFileStats = require('fs-promise').stat
 var resolvePath = require('path').resolve
 
 var Bluebird = require('bluebird')
+var debug = require('debug')('app-conf')
 var flatten = require('lodash.flatten')
 var isObject = require('lodash.isobject')
 var isString = require('lodash.isstring')
@@ -70,7 +71,10 @@ function load (name, opts) {
 
   return Bluebird.map(entries, function (entry) {
     return entry.read({ name: name })
-  }).then(flatten).map(function (file) {
+  }).then(flatten).each(function (file) {
+    debug(file.path)
+    return file
+  }).map(function (file) {
     return Bluebird.try(unserialize, [file]).then(function (value) {
       return fixPaths(value, dirname(file.path))
     }).catch(UnknownFormatError, unknownFormatHandler)
