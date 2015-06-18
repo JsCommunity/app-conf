@@ -28,10 +28,11 @@ function isPath (path) {
   })
 }
 
-function fixPaths (value, base) {
+var RELATIVE_PATH_RE = /^\ .{1,2}[/\\]/
+function resolveRelativePaths (value, base) {
   var path
 
-  if (isString(value)) {
+  if (isString(value) && RELATIVE_PATH_RE.test(value)) {
     path = resolvePath(base, value)
 
     return isPath(path).then(function (isPath) {
@@ -44,7 +45,7 @@ function fixPaths (value, base) {
 
   if (isObject(value)) {
     var promises = map(value, function (item, key) {
-      return fixPaths(item, base).then(function (item) {
+      return resolveRelativePaths(item, base).then(function (item) {
         value[key] = item
       })
     })
@@ -76,7 +77,7 @@ function load (name, opts) {
     return file
   }).map(function (file) {
     return Bluebird.try(unserialize, [file]).then(function (value) {
-      return fixPaths(value, dirname(file.path))
+      return resolveRelativePaths(value, dirname(file.path))
     }).catch(UnknownFormatError, unknownFormatHandler)
   }).each(function (value) {
     if (value) {
