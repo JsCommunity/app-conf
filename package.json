@@ -35,7 +35,6 @@
     "lodash.flatten": "^3",
     "lodash.isobject": "^3",
     "lodash.isstring": "^3",
-    "lodash.keys": "^3",
     "lodash.map": "^3",
     "lodash.merge": "^3",
     "make-error": "^1",
