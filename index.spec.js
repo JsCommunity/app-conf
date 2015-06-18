@@ -4,9 +4,10 @@
 
 // ===================================================================
 
-var loadConfig = require('./').load
-
+// This should be require first, otherwise fs-promise does not use it.
 var mock = require('mock-fs')
+
+var loadConfig = require('./').load
 
 // ===================================================================
 
