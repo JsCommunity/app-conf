@@ -5,7 +5,7 @@
   "keywords": [],
   "scripts": {
     "lint": "standard",
-    "test": "mocha --require must index.spec.js"
+    "test": "npm run lint && mocha --require must index.spec.js"
   },
   "repository": {
     "type": "git",
