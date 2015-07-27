@@ -28,7 +28,7 @@ function isPath (path) {
   })
 }
 
-var RELATIVE_PATH_RE = /^\ .{1,2}[/\\]/
+var RELATIVE_PATH_RE = /^\.{1,2}[/\\]/
 function resolveRelativePaths (value, base) {
   var path
 
