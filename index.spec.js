@@ -33,7 +33,16 @@ describe('appConf', function () {
       }),
       '.test-app-conf.json': mock.file({
         content: '{ "local.0": true, "foo": "local.0" }'
-      })
+      }),
+
+      // Special vendor file to test paths resolution.
+      '../../config.paths-resolution.json': mock.symlink({
+        path: '/etc/paths-resolution.json'
+      }),
+      '/etc/paths-resolution.json': mock.file({
+        content: '{ "file": "./any-file" }'
+      }),
+      '/etc/any-file': ''
     })
   })
 
@@ -49,7 +58,9 @@ describe('appConf', function () {
         system: true,
         vendor: true,
 
-        foo: 'local.0'
+        foo: 'local.0',
+
+        file: '/etc/any-file'
       })
     })
   })

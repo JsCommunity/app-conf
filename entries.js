@@ -6,6 +6,7 @@ var Bluebird = require('bluebird')
 
 var fs$readFile = require('fs-promise').readFile
 var j = require('path').join
+var realpath = require('fs-promise').realpath
 var resolvePath = require('path').resolve
 
 var flatten = require('lodash.flatten')
@@ -14,12 +15,16 @@ var xdgBasedir = require('xdg-basedir')
 
 // ===================================================================
 
+var realpathCache = {}
+
 function readFile (path) {
-  return fs$readFile(path).then(function (buffer) {
-    return {
-      path: path,
-      content: buffer
-    }
+  return realpath(path, realpathCache).then(function (path) {
+    return fs$readFile(path).then(function (buffer) {
+      return {
+        path: path,
+        content: buffer
+      }
+    })
   })
 }
 
