@@ -4,14 +4,21 @@
 
 var findKey = require('lodash.findkey')
 
-var stripJsonComments
-try {
-  stripJsonComments = require('strip-json-comments')
-} catch (error) {
-  stripJsonComments = function identity (val) {
-    return val
-  }
-}
+var formatJson = JSON.stringify
+var parseJson = (function () {
+  try {
+    return require('json5').parse
+  } catch (_) {}
+
+  try {
+    var stripJsonComments = require('strip-json-comments')
+    return function parseJson (json) {
+      return JSON.parse(stripJsonComments(json))
+    }
+  } catch (_) {}
+
+  return JSON.parse
+})()
 
 var UnknownFormatError = require('./unknown-format-error')
 
@@ -22,12 +29,12 @@ var serializers = Object.create(null)
 serializers.json = {
   // Test whether this “file” seems to be on the correct format.
   test: function (file) {
-    return (file.path && /\.json$/i.test(file.path))
+    return (file.path && /\.json5?$/i.test(file.path))
   },
 
   // Unserialize the content of the file.
   unserialize: function (file) {
-    return JSON.parse(stripJsonComments(String(file.content)))
+    return parseJson(String(file.content))
   },
 
   // Serialize the value to a string/buffer.
@@ -35,7 +42,7 @@ serializers.json = {
     opts || (opts = {})
     var indent = 'indent' in opts ? opts.indent : 2
 
-    return JSON.stringify(value, null, indent)
+    return formatJson(value, null, indent)
   }
 }
 
