@@ -16,9 +16,9 @@
   "license": "ISC",
   "devDependencies": {
     "mocha": "^2.1.0",
-    "mock-fs": "^2.5.0",
-    "must": "^0.12.0",
-    "standard": "^4.0.1"
+    "mock-fs": "^3.3.0",
+    "must": "^0.13.1",
+    "standard": "^5.3.1"
   },
   "files": [
     "index.js",
@@ -38,6 +38,6 @@
     "lodash.map": "^3",
     "lodash.merge": "^3",
     "make-error": "^1",
-    "xdg-basedir": "^1.0.0"
+    "xdg-basedir": "^2.0.0"
   }
 }
