@@ -8,11 +8,11 @@ var resolvePath = require('path').resolve
 
 var Bluebird = require('bluebird')
 var debug = require('debug')('app-conf')
-var flatten = require('lodash.flatten')
-var isObject = require('lodash.isobject')
-var isString = require('lodash.isstring')
-var map = require('lodash.map')
-var merge = require('lodash.merge')
+var flatten = require('lodash/flatten')
+var isObject = require('lodash/isObject')
+var isString = require('lodash/isString')
+var map = require('lodash/map')
+var merge = require('lodash/merge')
 
 var entries = require('./entries')
 var UnknownFormatError = require('./unknown-format-error')

@@ -31,12 +31,7 @@
     "debug": "^2.2.0",
     "fs-promise": "^0.5.0",
     "glob": "^7",
-    "lodash.findkey": "^4",
-    "lodash.flatten": "^4",
-    "lodash.isobject": "^3",
-    "lodash.isstring": "^4",
-    "lodash.map": "^4",
-    "lodash.merge": "^4",
+    "lodash": "^4.13.1",
     "make-error": "^1",
     "xdg-basedir": "^2.0.0"
   }

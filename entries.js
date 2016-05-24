@@ -9,7 +9,7 @@ var j = require('path').join
 var realpath = require('fs-promise').realpath
 var resolvePath = require('path').resolve
 
-var flatten = require('lodash.flatten')
+var flatten = require('lodash/flatten')
 var glob = Bluebird.promisify(require('glob'))
 var xdgBasedir = require('xdg-basedir')
 

@@ -2,7 +2,7 @@
 
 // ===================================================================
 
-var findKey = require('lodash.findkey')
+var findKey = require('lodash/findKey')
 
 var formatJson = JSON.stringify
 var parseJson = (function () {
