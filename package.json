@@ -18,7 +18,7 @@
     "mocha": "^2.1.0",
     "mock-fs": "^3.3.0",
     "must": "^0.13.1",
-    "standard": "^5.3.1"
+    "standard": "^7.1.0"
   },
   "files": [
     "index.js",
@@ -27,16 +27,16 @@
     "unknown-format-error.js"
   ],
   "dependencies": {
-    "bluebird": "^2.2.2",
+    "bluebird": "^3.4.0",
     "debug": "^2.2.0",
-    "fs-promise": "^0.3.1",
-    "glob": "^5",
-    "lodash.findkey": "^3",
-    "lodash.flatten": "^3",
+    "fs-promise": "^0.5.0",
+    "glob": "^7",
+    "lodash.findkey": "^4",
+    "lodash.flatten": "^4",
     "lodash.isobject": "^3",
-    "lodash.isstring": "^3",
-    "lodash.map": "^3",
-    "lodash.merge": "^3",
+    "lodash.isstring": "^4",
+    "lodash.map": "^4",
+    "lodash.merge": "^4",
     "make-error": "^1",
     "xdg-basedir": "^2.0.0"
   }

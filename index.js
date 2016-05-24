@@ -76,7 +76,9 @@ function load (name, opts) {
     debug(file.path)
     return file
   }).map(function (file) {
-    return Bluebird.try(unserialize, [file]).then(function (value) {
+    return new Bluebird(function (resolve) {
+      resolve(unserialize(file))
+    }).then(function (value) {
       return resolveRelativePaths(value, dirname(file.path))
     }).catch(UnknownFormatError, unknownFormatHandler)
   }).each(function (value) {
