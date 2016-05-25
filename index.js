@@ -64,11 +64,8 @@ function rethrow (error) {
 // ===================================================================
 
 function load (name, opts) {
-  opts || (opts = {})
-
-  var defaults = merge({}, opts.defaults || {})
-
-  var unknownFormatHandler = opts.ignoreUnknownFormats ? noop : rethrow
+  var defaults = merge({}, opts && opts.defaults)
+  var unknownFormatHandler = opts && opts.ignoreUnknownFormats ? noop : rethrow
 
   return Bluebird.map(entries, function (entry) {
     return entry.read({ name: name })
