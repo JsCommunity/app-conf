@@ -15,7 +15,7 @@
   "author": "Julien Fontanet <julien.fontanet@isonoe.net> (http://julien.isonoe.net/)",
   "license": "ISC",
   "devDependencies": {
-    "mocha": "^2.1.0",
+    "mocha": "^3.0.0",
     "mock-fs": "^3.3.0",
     "must": "^0.13.1",
     "standard": "^7.1.0"
