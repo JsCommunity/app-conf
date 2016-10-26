@@ -63,12 +63,21 @@ function rethrow (error) {
 
 // ===================================================================
 
+// Does not work properly in many cases (e.g. with pnpm)
+//
+// It's better for the user to pass an `appDir` option but we need to
+// keep this for compatibility.
+var DEFAULT_APP_DIR = dirname(dirname(__dirname))
+
 function load (name, opts) {
   var defaults = merge({}, opts && opts.defaults)
   var unknownFormatHandler = opts && opts.ignoreUnknownFormats ? noop : rethrow
 
   return Bluebird.map(entries, function (entry) {
-    return entry.read({ name: name })
+    return entry.read({
+      name: name,
+      appDir: opts && opts.appDir || DEFAULT_APP_DIR
+    })
   }).then(flatten).each(function (file) {
     debug(file.path)
     return file

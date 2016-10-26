@@ -5,7 +5,8 @@
   "keywords": [],
   "scripts": {
     "lint": "standard",
-    "test": "npm run lint && mocha --require must index.spec.js"
+    "posttest": "npm run lint",
+    "test": "mocha --require must index.spec.js"
   },
   "repository": {
     "type": "git",
@@ -16,7 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "mocha": "^3.0.0",
-    "mock-fs": "^3.3.0",
+    "mock-fs": "^3.11.0",
     "must": "^0.13.1",
     "standard": "^8.0.0"
   },

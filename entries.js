@@ -44,11 +44,11 @@ module.exports = [
   // Default vendor configuration.
   {
     name: 'vendor',
-    read: function () {
+    read: function (opts) {
       // It is assumed that app-conf is in the `node_modules`
       // directory of the owner package.
       return Bluebird.map(
-        glob(j(__dirname, '..', '..', 'config.*')),
+        glob(j(opts.appDir, 'config.*')),
         readFile
       )
     }
