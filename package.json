@@ -34,6 +34,6 @@
     "glob": "^7",
     "lodash": "^4.13.1",
     "make-error": "^1",
-    "xdg-basedir": "^2.0.0"
+    "xdg-basedir": "^3.0.0"
   }
 }
