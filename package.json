@@ -19,7 +19,7 @@
     "mocha": "^3.0.0",
     "mock-fs": "^4.0.0",
     "must": "^0.13.1",
-    "standard": "^8.0.0"
+    "standard": "^9.0.0"
   },
   "files": [
     "index.js",
