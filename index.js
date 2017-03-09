@@ -76,7 +76,7 @@ function load (name, opts) {
   return Bluebird.map(entries, function (entry) {
     return entry.read({
       name: name,
-      appDir: opts && opts.appDir || DEFAULT_APP_DIR
+      appDir: (opts && opts.appDir) || DEFAULT_APP_DIR
     })
   }).then(flatten).each(function (file) {
     debug(file.path)
