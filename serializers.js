@@ -97,7 +97,7 @@ var serialize = function (value, format, opts) {
   var buffer = serializers[format].serialize(value, opts)
 
   if (!(buffer instanceof Buffer)) {
-    buffer = new Buffer(buffer)
+    buffer = Buffer.from(buffer)
   }
 
   return buffer

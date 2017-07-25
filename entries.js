@@ -4,9 +4,9 @@
 
 var Bluebird = require('bluebird')
 
-var fs$readFile = require('fs-promise').readFile
+var fs$readFile = Bluebird.promisify(require('fs').readFile)
 var j = require('path').join
-var realpath = require('fs-promise').realpath
+var realpath = Bluebird.promisify(require('fs').realpath)
 var resolvePath = require('path').resolve
 
 var flatten = require('lodash/flatten')

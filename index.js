@@ -2,11 +2,12 @@
 
 // ===================================================================
 
+var Bluebird = require('bluebird')
+
 var dirname = require('path').dirname
-var getFileStats = require('fs-promise').stat
+var getFileStats = Bluebird.promisify(require('fs').stat)
 var resolvePath = require('path').resolve
 
-var Bluebird = require('bluebird')
 var debug = require('debug')('app-conf')
 var flatten = require('lodash/flatten')
 var isObject = require('lodash/isObject')
