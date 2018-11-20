@@ -35,7 +35,7 @@ the code.
 
 You may:
 
-- report any [issue](https://github.com/julien-f/human-format/issues)
+- report any [issue](https://github.com/julien-f/nodejs-app-conf/issues)
   you've encountered;
 - fork and create a pull request.
 
