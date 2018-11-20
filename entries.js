@@ -17,10 +17,8 @@ const pMap = require("./_pMap");
 
 // ===================================================================
 
-const realpathCache = {};
-
 function readFile(path) {
-  return realpath(path, realpathCache).then(function(path) {
+  return realpath(path).then(function(path) {
     return fs$readFile(path).then(function(buffer) {
       return {
         path: path,
