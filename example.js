@@ -1,11 +1,11 @@
-'use strict'
+"use strict";
 
 // ===================================================================
 
-var appconf = require('./')
+const appconf = require("./");
 
 // ===================================================================
 
-appconf.load('my-application').then(function (config) {
-  console.log(config)
-})
+appconf.load("my-application").then(function(config) {
+  console.log(config);
+});
