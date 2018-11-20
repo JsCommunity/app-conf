@@ -1,6 +1,6 @@
 'use strict'
 
-/* eslint-env mocha */
+/* eslint-env jest */
 
 // ===================================================================
 
@@ -12,7 +12,7 @@ var loadConfig = require('./').load
 // ===================================================================
 
 describe('appConf', function () {
-  before(function () {
+  beforeAll(function () {
     mock({
       // Vendor config
       '../../config.json': mock.file({
@@ -46,13 +46,13 @@ describe('appConf', function () {
     })
   })
 
-  after(function () {
+  afterAll(function () {
     mock.restore()
   })
 
   it('#load()', function () {
     return loadConfig('test-app-conf').then(function (config) {
-      config.must.eql({
+      expect(config).toEqual({
         'local.0': true,
         'local.1': true,
         system: true,
