@@ -2,16 +2,18 @@
 
 // ===================================================================
 
-const Bluebird = require("bluebird");
+const promisify = require("promise-toolbox/promisify");
 
-const fs$readFile = Bluebird.promisify(require("fs").readFile);
+const fs$readFile = promisify(require("fs").readFile);
 const j = require("path").join;
-const realpath = Bluebird.promisify(require("fs").realpath);
+const realpath = promisify(require("fs").realpath);
 const resolvePath = require("path").resolve;
 
 const flatten = require("lodash/flatten");
-const glob = Bluebird.promisify(require("glob"));
+const glob = promisify(require("glob"));
 const xdgBasedir = require("xdg-basedir");
+
+const pMap = require("./_pMap");
 
 // ===================================================================
 
@@ -43,35 +45,23 @@ module.exports = [
   // Default vendor configuration.
   {
     name: "vendor",
-    read: function(opts) {
-      // It is assumed that app-conf is in the `node_modules`
-      // directory of the owner package.
-      return Bluebird.map(glob(j(opts.appDir, "config.*")), readFile);
-    },
+    read: opts => pMap(glob(j(opts.appDir, "config.*")), readFile),
   },
 
   // Configuration for the whole system.
   {
     name: "system",
-    read: function(opts) {
-      const name = opts.name;
-
-      return Bluebird.map(glob(j("/etc", name, "config.*")), readFile);
-    },
+    read: opts => pMap(glob(j("/etc", opts.appName, "config.*")), readFile),
   },
 
   // Configuration for the current user.
   {
     name: "global",
-    read: function(opts) {
+    read: opts => {
       const configDir = xdgBasedir.config;
-      if (!configDir) {
-        return Bluebird.resolve([]);
-      }
-
-      const name = opts.name;
-
-      return Bluebird.map(glob(j(configDir, name, "config.*")), readFile);
+      return configDir === undefined
+        ? []
+        : pMap(glob(j(configDir, opts.appName, "config.*")), readFile);
     },
   },
 
@@ -79,8 +69,8 @@ module.exports = [
   // hierarchy).
   {
     name: "local",
-    read: function(opts) {
-      const name = opts.name;
+    read(opts) {
+      const { appName } = opts;
 
       // Compute the list of paths from the current directory to the
       // root directory.
@@ -88,18 +78,19 @@ module.exports = [
       let dir, prev;
       dir = process.cwd();
       while (dir !== prev) {
-        paths.push(j(dir, "." + name + ".*"));
+        paths.push(j(dir, "." + appName + ".*"));
         prev = dir;
         dir = resolvePath(dir, "..");
       }
 
-      return Bluebird.map(paths.reverse(), function(path) {
-        return glob(path, {
-          silent: true,
-        }).catch(ignoreAccessErrors);
-      })
-        .then(flatten)
-        .map(readFile);
+      return pMap(
+        pMap(paths.reverse(), path =>
+          glob(path, {
+            silent: true,
+          }).catch(ignoreAccessErrors)
+        ).then(flatten),
+        readFile
+      );
     },
   },
 ];
