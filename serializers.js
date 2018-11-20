@@ -63,6 +63,16 @@ try {
   };
 } catch (error) {}
 
+try {
+  const { parse, stringify } = require('@iarna/toml')
+
+  serializers.toml = {
+    serialize: stringify,
+    test: ({ path }) => path !== undefined && /\.toml$/i.test(path),
+    unserialize: ({ content }) => parse(String(content)),
+  }
+} catch (error) {}
+
 // Optional dependency.
 try {
   const yaml = require("js-yaml");

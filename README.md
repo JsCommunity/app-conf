@@ -22,6 +22,7 @@ precedence):
 JSON format is supported natively but you may install the following
 packages to have additional features:
 
+- [@iarna/toml](https://www.npmjs.com/package/@iarna/toml): to support [TOML files](https://github.com/toml-lang/toml);
 - [ini](https://www.npmjs.org/package/ini): to support INI files;
 - [js-yaml](https://www.npmjs.org/package/js-yaml): to support YAML files;
 - [json5](https://www.npmjs.com/package/json5): to support advanced JSON files;
