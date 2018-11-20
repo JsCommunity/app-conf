@@ -10,8 +10,6 @@ const resolvePath = require("path").resolve;
 
 const debug = require("debug")("app-conf");
 const flatten = require("lodash/flatten");
-const isObject = require("lodash/isObject");
-const isString = require("lodash/isString");
 const merge = require("lodash/merge");
 
 const entries = require("./entries");
@@ -25,12 +23,12 @@ const isPath = path => getFileStats(path).then(() => true, () => false);
 
 const RELATIVE_PATH_RE = /^\.{1,2}[/\\]/;
 async function resolveRelativePaths(value, base) {
-  if (isString(value) && RELATIVE_PATH_RE.test(value)) {
+  if (typeof value === 'string' && RELATIVE_PATH_RE.test(value)) {
     const path = resolvePath(base, value);
     return (await isPath(path)) ? path : value;
   }
 
-  if (isObject(value)) {
+  if (value !== null && typeof value === 'object') {
     await pMap(Object.keys(value), async key => {
       value[key] = await resolveRelativePaths(value[key], base);
     });
