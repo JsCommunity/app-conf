@@ -22,20 +22,21 @@ const unserialize = require("./serializers").unserialize;
 const isPath = path => getFileStats(path).then(() => true, () => false);
 
 const RELATIVE_PATH_RE = /^\.{1,2}[/\\]/;
-async function resolveRelativePaths(value, base) {
-  if (typeof value === 'string' && RELATIVE_PATH_RE.test(value)) {
+function resolveRelativePaths(value, base) {
+  if (typeof value === "string" && RELATIVE_PATH_RE.test(value)) {
     const path = resolvePath(base, value);
-    return (await isPath(path)) ? path : value;
+    return isPath(path).then(success => (success ? path : value));
   }
 
-  if (value !== null && typeof value === 'object') {
-    await pMap(Object.keys(value), async key => {
-      value[key] = await resolveRelativePaths(value[key], base);
-    });
-    return value;
+  if (value !== null && typeof value === "object") {
+    return pMap(Object.keys(value), key =>
+      resolveRelativePaths(value[key], base).then(resolved => {
+        value[key] = resolved;
+      })
+    ).then(() => value);
   }
 
-  return value;
+  return Promise.resolve(value);
 }
 
 // ===================================================================
@@ -46,34 +47,37 @@ async function resolveRelativePaths(value, base) {
 // keep this for compatibility.
 const DEFAULT_APP_DIR = dirname(dirname(__dirname));
 
-async function load(appName, opts) {
+function load(appName, opts) {
   const ignoreUnknownFormats =
     (opts != null && opts.ignoreUnknownFormats) || false;
 
-  const files = flatten(
-    await pMap(entries, entry =>
-      entry.read({
-        appDir: (opts && opts.appDir) || DEFAULT_APP_DIR,
-        appName,
-      })
-    )
-  );
-  files.forEach(_ => debug(_.path));
-  const data = await pMap(files, file => {
-    try {
-      return resolveRelativePaths(unserialize(file), dirname(file.path));
-    } catch (error) {
-      if (!(ignoreUnknownFormats && error instanceof UnknownFormatError)) {
-        throw error;
-      }
-    }
-  });
-  return data.reduce((acc, cfg) => {
-    if (cfg !== undefined) {
-      merge(acc, cfg);
-    }
-    return acc;
-  }, merge({}, opts && opts.defaults));
+  return pMap(entries, entry =>
+    entry.read({
+      appDir: (opts && opts.appDir) || DEFAULT_APP_DIR,
+      appName,
+    })
+  )
+    .then(files => {
+      files = flatten(files);
+      files.forEach(_ => debug(_.path));
+      return pMap(files, file => {
+        try {
+          return resolveRelativePaths(unserialize(file), dirname(file.path));
+        } catch (error) {
+          if (!(ignoreUnknownFormats && error instanceof UnknownFormatError)) {
+            throw error;
+          }
+        }
+      });
+    })
+    .then(data =>
+      data.reduce((acc, cfg) => {
+        if (cfg !== undefined) {
+          merge(acc, cfg);
+        }
+        return acc;
+      }, merge({}, opts && opts.defaults))
+    );
 }
 
 // ===================================================================
