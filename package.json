@@ -19,7 +19,7 @@
     "unknown-format-error.js"
   ],
   "engines": {
-    "node": ">=8"
+    "node": ">=6"
   },
   "dependencies": {
     "glob": "^7.1.3",
