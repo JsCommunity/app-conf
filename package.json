@@ -38,23 +38,30 @@
     "eslint-plugin-standard": "^4.0.0",
     "husky": "^1.1.4",
     "jest": "^23.6.0",
+    "lint-staged": "^8.1.0",
     "mock-fs": "^4.7.0",
     "prettier": "^1.15.2",
     "rimraf": "^2.6.2"
   },
   "scripts": {
     "dev-test": "jest --bail --watch",
-    "pretest": "eslint --ignore-path .gitignore --fix .",
     "test": "jest"
   },
   "husky": {
     "hooks": {
-      "commit-msg": "npm test"
+      "pre-commit": "lint-staged"
     }
   },
   "jest": {
     "collectCoverage": true,
     "testEnvironment": "node",
     "testRegex": "\\.spec\\.js$"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add",
+      "eslint --ignore-pattern '!*'"
+    ]
   }
 }

@@ -7,10 +7,12 @@ const findKey = require("lodash/findKey");
 const formatJson = JSON.stringify;
 const parseJson = (function() {
   try {
+    // eslint-disable-next-line node/no-extraneous-require
     return require("json5").parse;
   } catch (_) {}
 
   try {
+    // eslint-disable-next-line node/no-extraneous-require
     const stripJsonComments = require("strip-json-comments");
     return function parseJson(json) {
       return JSON.parse(stripJsonComments(json));
@@ -48,6 +50,7 @@ serializers.json = {
 
 // Optional dependency.
 try {
+  // eslint-disable-next-line node/no-missing-require
   const ini = require("ini");
 
   serializers.ini = {
@@ -64,17 +67,19 @@ try {
 } catch (error) {}
 
 try {
-  const { parse, stringify } = require('@iarna/toml')
+  // eslint-disable-next-line node/no-missing-require
+  const { parse, stringify } = require("@iarna/toml");
 
   serializers.toml = {
     serialize: stringify,
     test: ({ path }) => path !== undefined && /\.toml$/i.test(path),
     unserialize: ({ content }) => parse(String(content)),
-  }
+  };
 } catch (error) {}
 
 // Optional dependency.
 try {
+  // eslint-disable-next-line node/no-extraneous-require
   const yaml = require("js-yaml");
 
   serializers.yaml = {
