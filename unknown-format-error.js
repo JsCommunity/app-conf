@@ -6,4 +6,4 @@ const makeError = require("make-error");
 
 // ===================================================================
 
-exports = module.exports = makeError("UnknownFormatError");
+module.exports = makeError("UnknownFormatError");
