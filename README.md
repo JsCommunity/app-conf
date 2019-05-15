@@ -5,7 +5,10 @@
 ```javascript
 var loadConfig = require("app-conf").load;
 
-loadConfig("my-application").then(function(config) {
+loadConfig("my-application", {
+  // this is the directory where the vendor conf is stored
+  appDir: __dirname,
+}).then(function(config) {
   console.log(config);
 });
 ```
