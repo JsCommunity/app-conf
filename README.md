@@ -16,14 +16,18 @@ loadConfig("my-application", {
 The following files are looked up and merged (the latest take
 precedence):
 
-- `config.*` in the project directory;
-- `/etc/my-application/config.*`;
-- `~/.config/my-application/config.*`;
-- `/.my-application.*` down to `./.my-application.*` in the current
-  working directory.
+1. **vendor**: `config.*` in the application directory;
+1. **global**: `/etc/my-application/config.*`;
+1. **user**: `~/.config/my-application/config.*`;
+1. **local**: `/.my-application.*` down to `./.my-application.*` in the current
+   working directory;
+
+> Note: the **local** config is relative to the current working directory and
+> only makes sense for CLIs.
 
 Relative paths, string values starting by `./` or `../`, are automatically
 resolved from the config file directory.
+
 
 JSON format is supported natively but you may install the following
 packages to have additional features:
