@@ -43,13 +43,18 @@ module.exports = [
   // Default vendor configuration.
   {
     name: "vendor",
-    read: opts => pMap(glob(j(opts.appDir, "config.*")), readFile),
+    read: opts =>
+      pMap(glob(j(opts.appDir, opts.envPrefix + "config.*")), readFile),
   },
 
   // Configuration for the whole system.
   {
     name: "system",
-    read: opts => pMap(glob(j("/etc", opts.appName, "config.*")), readFile),
+    read: opts =>
+      pMap(
+        glob(j("/etc", opts.appName, opts.envPrefix + "config.*")),
+        readFile
+      ),
   },
 
   // Configuration for the current user.
@@ -59,7 +64,10 @@ module.exports = [
       const configDir = xdgBasedir.config;
       return configDir === undefined
         ? []
-        : pMap(glob(j(configDir, opts.appName, "config.*")), readFile);
+        : pMap(
+            glob(j(configDir, opts.appName, opts.envPrefix + "config.*")),
+            readFile
+          );
     },
   },
 
@@ -76,7 +84,7 @@ module.exports = [
       let dir, prev;
       dir = process.cwd();
       while (dir !== prev) {
-        paths.push(j(dir, "." + appName + ".*"));
+        paths.push(j(dir, "." + opts.envPrefix + appName + ".*"));
         prev = dir;
         dir = resolvePath(dir, "..");
       }

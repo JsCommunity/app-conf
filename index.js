@@ -49,15 +49,30 @@ function resolvePaths(value, base) {
 const DEFAULT_APP_DIR = dirname(dirname(__dirname));
 
 function load(appName, opts) {
+  const readOpts = {
+    appDir: (opts && opts.appDir) || DEFAULT_APP_DIR,
+    appName,
+    envPrefix: "",
+  };
+
+  const env = process.env.APP_CONF_ENV;
+  const read = (() => {
+    if (env === undefined) {
+      return entry => entry.read(readOpts);
+    }
+
+    const readOptsWithEnv = Object.assign({}, readOpts);
+    readOptsWithEnv.envPrefix = env + ".";
+    return entry =>
+      Promise.all([entry.read(readOpts), entry.read(readOptsWithEnv)]).then(
+        flatten
+      );
+  })();
+
   const ignoreUnknownFormats =
     (opts != null && opts.ignoreUnknownFormats) || false;
 
-  return pMap(entries, entry =>
-    entry.read({
-      appDir: (opts && opts.appDir) || DEFAULT_APP_DIR,
-      appName,
-    })
-  )
+  return pMap(entries, read)
     .then(files => {
       files = flatten(files);
       files.forEach(_ => debug(_.path));

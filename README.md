@@ -33,6 +33,18 @@ resolved from the config file directory.
 Paths relative to the home directory, string values starting by `~/`, are also
 automatically resolved.
 
+The environment variable `APP_CONF_ENV` can be used to parse environment
+specific config files:
+
+1. **vendor**: `${APP_CONF_ENV}.config.*` in the application directory;
+1. **global**: `/etc/my-application/${APP_CONF_ENV}.config.*`;
+1. **user**: `~/.config/my-application/config.*`;
+1. **local**: `/.${APP_CONF_ENV}.my-application.*` down to
+   `./.${APP_CONF_ENV}.my-application.*` in the current working directory.
+
+> Note: these files are merged after there respective environment-less
+> equivalent.
+
 JSON format is supported natively but you may install the following
 packages to have additional features:
 
