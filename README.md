@@ -3,9 +3,9 @@
 ## Usage
 
 ```javascript
-var loadConfig = require('app-conf').load;
+var loadConfig = require("app-conf").load;
 
-loadConfig('my-application').then(function (config) {
+loadConfig("my-application").then(function(config) {
   console.log(config);
 });
 ```
@@ -30,7 +30,7 @@ packages to have additional features:
 
 ## Contributing
 
-Contributions are *very* welcome, either on the documentation or on
+Contributions are _very_ welcome, either on the documentation or on
 the code.
 
 You may:
