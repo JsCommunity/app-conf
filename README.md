@@ -19,6 +19,9 @@ precedence):
 - `/.my-application.*` down to `./.my-application.*` in the current
   working directory.
 
+Relative paths, string values starting by `./` or `../`, are automatically
+resolved from the config file directory.
+
 JSON format is supported natively but you may install the following
 packages to have additional features:
 

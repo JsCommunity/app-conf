@@ -2,10 +2,7 @@
 
 // ===================================================================
 
-const promisify = require("promise-toolbox/promisify");
-
 const dirname = require("path").dirname;
-const getFileStats = promisify(require("fs").stat);
 const resolvePath = require("path").resolve;
 
 const debug = require("debug")("app-conf");
@@ -19,13 +16,10 @@ const unserialize = require("./serializers").unserialize;
 
 // ===================================================================
 
-const isPath = path => getFileStats(path).then(() => true, () => false);
-
 const RELATIVE_PATH_RE = /^\.{1,2}[/\\]/;
 function resolveRelativePaths(value, base) {
   if (typeof value === "string" && RELATIVE_PATH_RE.test(value)) {
-    const path = resolvePath(base, value);
-    return isPath(path).then(success => (success ? path : value));
+    return Promise.resolve(resolvePath(base, value));
   }
 
   if (value !== null && typeof value === "object") {

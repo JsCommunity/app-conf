@@ -42,7 +42,6 @@ describe("appConf", function() {
       "/etc/paths-resolution.json": mock.file({
         content: '{ "file": "./any-file" }',
       }),
-      "/etc/any-file": "",
     });
   });
 
