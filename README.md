@@ -28,6 +28,8 @@ precedence):
 Relative paths, string values starting by `./` or `../`, are automatically
 resolved from the config file directory.
 
+Paths relative to the home directory, string values starting by `~/`, are also
+automatically resolved.
 
 JSON format is supported natively but you may install the following
 packages to have additional features:

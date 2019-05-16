@@ -3,6 +3,7 @@
 // ===================================================================
 
 const dirname = require("path").dirname;
+const homedir = require("os").homedir;
 const resolvePath = require("path").resolve;
 
 const debug = require("debug")("app-conf");
@@ -17,14 +18,20 @@ const unserialize = require("./serializers").unserialize;
 // ===================================================================
 
 const RELATIVE_PATH_RE = /^\.{1,2}[/\\]/;
-function resolveRelativePaths(value, base) {
-  if (typeof value === "string" && RELATIVE_PATH_RE.test(value)) {
-    return Promise.resolve(resolvePath(base, value));
+function resolvePaths(value, base) {
+  if (typeof value === "string") {
+    return Promise.resolve(
+      value[0] === "~" && (value[1] === "/" || value[1] === "\\")
+        ? homedir() + value.slice(1)
+        : RELATIVE_PATH_RE.test(value)
+        ? resolvePath(base, value)
+        : value
+    );
   }
 
   if (value !== null && typeof value === "object") {
     return pMap(Object.keys(value), key =>
-      resolveRelativePaths(value[key], base).then(resolved => {
+      resolvePaths(value[key], base).then(resolved => {
         value[key] = resolved;
       })
     ).then(() => value);
@@ -56,7 +63,7 @@ function load(appName, opts) {
       files.forEach(_ => debug(_.path));
       return pMap(files, file => {
         try {
-          return resolveRelativePaths(unserialize(file), dirname(file.path));
+          return resolvePaths(unserialize(file), dirname(file.path));
         } catch (error) {
           if (!(ignoreUnknownFormats && error instanceof UnknownFormatError)) {
             throw error;

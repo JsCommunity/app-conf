@@ -7,6 +7,8 @@
 // This should be require first, otherwise fs-promise does not use it.
 const mock = require("mock-fs");
 
+const homedir = require("os").homedir;
+
 const loadConfig = require("./").load;
 
 // ===================================================================
@@ -40,7 +42,11 @@ describe("appConf", function() {
         path: "/etc/paths-resolution.json",
       }),
       "/etc/paths-resolution.json": mock.file({
-        content: '{ "file": "./any-file" }',
+        content: JSON.stringify({
+          pathWithCurrent: "./foo",
+          pathWithHome: "~/bar",
+          pathWithParent: "../baz",
+        }),
       }),
     });
   });
@@ -59,7 +65,9 @@ describe("appConf", function() {
 
         foo: "local.0",
 
-        file: "/etc/any-file",
+        pathWithCurrent: "/etc/foo",
+        pathWithHome: homedir() + "/bar",
+        pathWithParent: "/baz",
       });
     });
   });
