@@ -1,4 +1,6 @@
-# app-conf [![Build Status](https://travis-ci.org/julien-f/nodejs-app-conf.png?branch=master)](https://travis-ci.org/julien-f/nodejs-app-conf)
+# app-conf
+
+[![Package Version](https://badgen.net/npm/v/app-conf)](https://npmjs.org/package/app-conf) [![Build Status](https://travis-ci.org/julien-f/nodejs-app-conf.png?branch=master)](https://travis-ci.org/julien-f/nodejs-app-conf) [![PackagePhobia](https://badgen.net/packagephobia/install/app-conf)](https://packagephobia.now.sh/result?p=app-conf) [![Latest Commit](https://badgen.net/github/last-commit/julien-f/nodejs-app-conf)](https://github.com/julien-f/nodejs-app-conf/commits/master)
 
 ## Usage
 
