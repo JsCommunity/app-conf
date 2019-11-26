@@ -60,10 +60,11 @@ function load(appName, opts) {
   )
     .then(files => {
       files = flatten(files);
-      files.forEach(_ => debug(_.path));
       return pMap(files, file => {
         try {
-          return resolvePaths(unserialize(file), dirname(file.path));
+          const data = unserialize(file);
+          debug(file.path);
+          return resolvePaths(data, dirname(file.path));
         } catch (error) {
           if (!(ignoreUnknownFormats && error instanceof UnknownFormatError)) {
             throw error;
