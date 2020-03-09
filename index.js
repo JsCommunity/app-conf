@@ -48,16 +48,11 @@ function resolvePaths(value, base) {
 // keep this for compatibility.
 const DEFAULT_APP_DIR = dirname(dirname(__dirname));
 
-function load(appName, opts) {
-  const ignoreUnknownFormats =
-    (opts != null && opts.ignoreUnknownFormats) || false;
-
-  return pMap(entries, entry =>
-    entry.read({
-      appDir: (opts && opts.appDir) || DEFAULT_APP_DIR,
-      appName,
-    })
-  )
+function load(
+  appName,
+  { appDir = DEFAULT_APP_DIR, defaults, ignoreUnknownFormats = false } = {}
+) {
+  return pMap(entries, entry => entry.read({ appDir, appName }))
     .then(files => {
       files = flatten(files);
       return pMap(files, file => {
@@ -78,7 +73,7 @@ function load(appName, opts) {
           merge(acc, cfg);
         }
         return acc;
-      }, merge({}, opts && opts.defaults))
+      }, merge({}, defaults))
     );
 }
 
