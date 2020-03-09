@@ -17,36 +17,26 @@ describe("appConf", function() {
   beforeAll(function() {
     mock({
       // Vendor config
-      "../../config.json": mock.file({
-        content: '{ "vendor": true, "foo": "vendor" }',
-      }),
+      "../../config.json": '{ "vendor": true, "foo": "vendor" }',
 
       // System
-      "/etc/test-app-conf/config.json": mock.file({
-        content: '{ "system": true, "foo": "system" }',
-      }),
+      "/etc/test-app-conf/config.json": '{ "system": true, "foo": "system" }',
 
       // Global (user configuration)
       // TODO
 
       // Local
-      "../.test-app-conf.json": mock.file({
-        content: '{ "local.1": true, "foo": "local.1" }',
-      }),
-      ".test-app-conf.json": mock.file({
-        content: '{ "local.0": true, "foo": "local.0" }',
-      }),
+      "../.test-app-conf.json": '{ "local.1": true, "foo": "local.1" }',
+      ".test-app-conf.json": '{ "local.0": true, "foo": "local.0" }',
 
       // Special vendor file to test paths resolution.
       "../../config.paths-resolution.json": mock.symlink({
         path: "/etc/paths-resolution.json",
       }),
-      "/etc/paths-resolution.json": mock.file({
-        content: JSON.stringify({
-          pathWithCurrent: "./foo",
-          pathWithHome: "~/bar",
-          pathWithParent: "../baz",
-        }),
+      "/etc/paths-resolution.json": JSON.stringify({
+        pathWithCurrent: "./foo",
+        pathWithHome: "~/bar",
+        pathWithParent: "../baz",
       }),
     });
   });
