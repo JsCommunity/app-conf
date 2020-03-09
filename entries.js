@@ -19,12 +19,19 @@ const pMap = require("./_pMap");
 
 function readFile(path) {
   return realpath(path).then(function(path) {
-    return fs$readFile(path).then(function(buffer) {
-      return {
-        path: path,
-        content: buffer,
-      };
-    });
+    return fs$readFile(path).then(
+      function(buffer) {
+        return {
+          path: path,
+          content: buffer,
+        };
+      },
+      function(error) {
+        if (error.code !== "EACCES") {
+          throw error;
+        }
+      }
+    );
   });
 }
 

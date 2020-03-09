@@ -61,6 +61,9 @@ function load(appName, opts) {
     .then(files => {
       files = flatten(files);
       return pMap(files, file => {
+        if (file === undefined) {
+          return;
+        }
         try {
           const data = unserialize(file);
           debug(file.path);

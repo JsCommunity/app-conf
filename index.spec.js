@@ -15,12 +15,19 @@ const loadConfig = require("./").load;
 
 describe("appConf", function() {
   beforeAll(function() {
+    const unreadable = mock.file({
+      content: "",
+      mode: 0,
+    });
+
     mock({
       // Vendor config
       "../../config.json": '{ "vendor": true, "foo": "vendor" }',
+      "../../config.unreadable.json": unreadable,
 
       // System
       "/etc/test-app-conf/config.json": '{ "system": true, "foo": "system" }',
+      "/etc/test-app-conf/config.unreadable.json": unreadable,
 
       // Global (user configuration)
       // TODO
@@ -28,6 +35,7 @@ describe("appConf", function() {
       // Local
       "../.test-app-conf.json": '{ "local.1": true, "foo": "local.1" }',
       ".test-app-conf.json": '{ "local.0": true, "foo": "local.0" }',
+      ".test-app-conf.unreadable.json": unreadable,
 
       // Special vendor file to test paths resolution.
       "../../config.paths-resolution.json": mock.symlink({
