@@ -50,9 +50,22 @@ const DEFAULT_APP_DIR = dirname(dirname(__dirname));
 
 function load(
   appName,
-  { appDir = DEFAULT_APP_DIR, defaults, ignoreUnknownFormats = false } = {}
+  {
+    appDir = DEFAULT_APP_DIR,
+    defaults,
+    entries: whitelist,
+    ignoreUnknownFormats = false,
+  } = {}
 ) {
-  return pMap(entries, entry => entry.read({ appDir, appName }))
+  const useWhitelist = whitelist !== undefined;
+  if (useWhitelist) {
+    whitelist = new Set(whitelist);
+  }
+  return pMap(entries, entry =>
+    useWhitelist && !whitelist.has(entry.name)
+      ? []
+      : entry.read({ appDir, appName })
+  )
     .then(files => {
       files = flatten(files);
       return pMap(files, file => {

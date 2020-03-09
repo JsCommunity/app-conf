@@ -45,19 +45,36 @@ describe("appConf", function() {
     mock.restore();
   });
 
-  it("#load()", function() {
-    return loadConfig("test-app-conf").then(function(config) {
-      expect(config).toEqual({
-        "local.0": true,
-        "local.1": true,
-        system: true,
-        vendor: true,
+  describe("#load()", function() {
+    it("works", function() {
+      return loadConfig("test-app-conf").then(function(config) {
+        expect(config).toEqual({
+          "local.0": true,
+          "local.1": true,
+          system: true,
+          vendor: true,
 
-        foo: "local.0",
+          foo: "local.0",
 
-        pathWithCurrent: "/etc/foo",
-        pathWithHome: homedir() + "/bar",
-        pathWithParent: "/baz",
+          pathWithCurrent: "/etc/foo",
+          pathWithHome: homedir() + "/bar",
+          pathWithParent: "/baz",
+        });
+      });
+    });
+
+    it("can load only specific entries", function() {
+      return loadConfig("test-app-conf", {
+        entries: ["local", "system"],
+      }).then(function(config) {
+        expect(config).toEqual({
+          "local.0": true,
+          "local.1": true,
+          system: true,
+
+          // merging order is still the same though
+          foo: "local.0",
+        });
       });
     });
   });

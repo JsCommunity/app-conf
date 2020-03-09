@@ -4,17 +4,6 @@
 
 ## Usage
 
-```javascript
-var loadConfig = require("app-conf").load;
-
-loadConfig("my-application", {
-  // this is the directory where the vendor conf is stored
-  appDir: __dirname,
-}).then(function(config) {
-  console.log(config);
-});
-```
-
 The following files are looked up and merged (the latest take
 precedence):
 
@@ -26,6 +15,20 @@ precedence):
 
 > Note: the **local** config is relative to the current working directory and
 > only makes sense for CLIs.
+
+```javascript
+var loadConfig = require("app-conf").load;
+
+loadConfig("my-application", {
+  // this is the directory where the vendor conf is stored
+  appDir: __dirname,
+
+  // which types of config should be loaded
+  entries: ["vendor", "global", "user", "local"],
+}).then(function(config) {
+  console.log(config);
+});
+```
 
 Relative paths, string values starting by `./` or `../`, are automatically
 resolved from the config file directory.
