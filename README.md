@@ -23,8 +23,14 @@ loadConfig("my-application", {
   // this is the directory where the vendor conf is stored
   appDir: __dirname,
 
+  // default config values
+  defaults: {},
+
   // which types of config should be loaded
   entries: ["vendor", "global", "user", "local"],
+
+  // whether to ignore unknown file formats instead of throwing
+  ignoreUnknownFormats: false,
 }).then(function(config) {
   console.log(config);
 });
