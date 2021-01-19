@@ -19,9 +19,10 @@
     "unknown-format-error.js"
   ],
   "engines": {
-    "node": ">=6"
+    "node": ">=8.10"
   },
   "dependencies": {
+    "chokidar": "^3.5.1",
     "debug": "^4.1.0",
     "glob": "^7.1.3",
     "lodash": "^4.17.11",

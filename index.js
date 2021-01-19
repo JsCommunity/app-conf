@@ -2,6 +2,7 @@
 
 // ===================================================================
 
+const chokidar = require("chokidar");
 const dirname = require("path").dirname;
 const homedir = require("os").homedir;
 const resolvePath = require("path").resolve;
@@ -61,11 +62,16 @@ function load(
   if (useWhitelist) {
     whitelist = new Set(whitelist);
   }
-  return pMap(entries, entry =>
-    useWhitelist && !whitelist.has(entry.name)
-      ? []
-      : entry.read({ appDir, appName })
-  )
+  const entryOpts = { appDir, appName };
+  return pMap(entries, entry => {
+    if (useWhitelist && !whitelist.has(entry.name)) {
+      return [];
+    }
+
+    const dirFn = entry.dir;
+    const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
+    return entry.read(entryOpts, dir);
+  })
     .then(files => {
       files = flatten(files);
       return pMap(files, file => {
@@ -89,7 +95,45 @@ function load(
       }, merge({}, defaults))
     );
 }
+exports.load = load;
 
 // ===================================================================
 
-exports.load = load;
+exports.watch = function watch({ appName, ...opts }, cb) {
+  return new Promise((resolve, reject) => {
+    const { appDir } = opts;
+    if (appDir === undefined) {
+      throw new TypeError("appDir must be defined");
+    }
+
+    const dirs = [];
+    const entryOpts = { appName, appDir };
+    entries.forEach(entry => {
+      const dirFn = entry.dir;
+      const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
+      if (dir !== undefined) {
+        dirs.push(dir);
+      }
+    });
+
+    const watcher = chokidar.watch(dirs, {
+      depth: 0,
+      ignoreInitial: true,
+      ignorePermissionErrors: true,
+    });
+
+    const loadWrapper = () => {
+      load(appName, opts).then(config => cb(undefined, config), cb);
+    };
+
+    watcher
+      .on("all", loadWrapper)
+      .once("error", reject)
+      .once("ready", (...args) => {
+        loadWrapper();
+        resolve(function unsubscribe() {
+          return watcher.close();
+        });
+      });
+  });
+};

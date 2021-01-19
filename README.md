@@ -51,6 +51,38 @@ packages to have additional features:
 - [json5](https://www.npmjs.com/package/json5): to support advanced JSON files;
 - [strip-json-comments](https://www.npmjs.org/package/strip-json-comments): to support comments in JSON files.
 
+### `watch(opts, cb)`
+
+This method reload the configuration every time it might have changed.
+
+```js
+const watchConfig = require("app-conf").watch;
+
+const stopWatching = await watchConfig(
+  {
+    // contrary to `load`, this option is required
+    appDir: __dirname,
+
+    // contrary to `load`, this is part of the options
+    appName: "my-application",
+
+    // all other options are passed to load()
+  },
+  (error, config) => {
+    if (error !== undefined) {
+      console.warn("loading config has failed");
+
+      // we might not want to retry on changes
+      stopWatching();
+
+      return;
+    }
+
+    console.log("config has been loaded", config);
+  }
+);
+```
+
 ## Contributing
 
 Contributions are _very_ welcome, either on the documentation or on

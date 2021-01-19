@@ -43,24 +43,26 @@ module.exports = [
   // Default vendor configuration.
   {
     name: "vendor",
-    read: opts => pMap(glob(j(opts.appDir, "config.*")), readFile),
+    dir: opts => opts.appDir,
+    read: (_, dir) => pMap(glob(j(dir, "config.*")), readFile),
   },
 
   // Configuration for the whole system.
   {
     name: "system",
-    read: opts => pMap(glob(j("/etc", opts.appName, "config.*")), readFile),
+    dir: opts => j("/etc", opts.appName),
+    read: (_, dir) => pMap(glob(j(dir, "config.*")), readFile),
   },
 
   // Configuration for the current user.
   {
     name: "global",
-    read: opts => {
+    dir: opts => {
       const configDir = xdgBasedir.config;
-      return configDir === undefined
-        ? []
-        : pMap(glob(j(configDir, opts.appName, "config.*")), readFile);
+      return configDir && j(configDir, opts.appName);
     },
+    read: (_, dir) =>
+      dir === undefined ? [] : pMap(glob(j(dir, "config.*")), readFile),
   },
 
   // Configuration of the current project (local to the file
