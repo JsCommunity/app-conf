@@ -82,18 +82,26 @@ try {
   // eslint-disable-next-line node/no-extraneous-require
   const yaml = require("js-yaml");
 
+  let { dump, load } = yaml;
+
+  // compat with js-yaml < 4
+  if ("DEFAULT_SAFE_SCHEMA" in yaml) {
+    dump = yaml.safeDump;
+    load = yaml.safeLoad;
+  }
+
   serializers.yaml = {
     test: function(file) {
       return file.path && /\.yaml$/i.test(file.path);
     },
     unserialize: function(file) {
-      return yaml.safeLoad(String(file.content));
+      return load(String(file.content));
     },
     serialize: function(value, opts) {
       opts || (opts = {});
       const indent = "indent" in opts ? opts.indent : 2;
 
-      return yaml.safeDump(value, {
+      return dump(value, {
         indent: indent,
       });
     },
