@@ -13,8 +13,8 @@ const loadConfig = require("./").load;
 
 // ===================================================================
 
-describe("appConf", function() {
-  beforeAll(function() {
+describe("appConf", function () {
+  beforeAll(function () {
     mock({
       // Vendor config
       "../../config.json": '{ "vendor": true, "foo": "vendor" }',
@@ -41,13 +41,13 @@ describe("appConf", function() {
     });
   });
 
-  afterAll(function() {
+  afterAll(function () {
     mock.restore();
   });
 
-  describe("#load()", function() {
-    it("works", function() {
-      return loadConfig("test-app-conf").then(function(config) {
+  describe("#load()", function () {
+    it("works", function () {
+      return loadConfig("test-app-conf").then(function (config) {
         expect(config).toEqual({
           "local.0": true,
           "local.1": true,
@@ -63,10 +63,10 @@ describe("appConf", function() {
       });
     });
 
-    it("can load only specific entries", function() {
+    it("can load only specific entries", function () {
       return loadConfig("test-app-conf", {
         entries: ["local", "system"],
-      }).then(function(config) {
+      }).then(function (config) {
         expect(config).toEqual({
           "local.0": true,
           "local.1": true,

@@ -31,7 +31,7 @@ loadConfig("my-application", {
 
   // whether to ignore unknown file formats instead of throwing
   ignoreUnknownFormats: false,
-}).then(function(config) {
+}).then(function (config) {
   console.log(config);
 });
 ```

@@ -5,7 +5,7 @@
 const findKey = require("lodash/findKey");
 
 const formatJson = JSON.stringify;
-const parseJson = (function() {
+const parseJson = (function () {
   try {
     // eslint-disable-next-line node/no-extraneous-require
     return require("json5").parse;
@@ -30,17 +30,17 @@ const serializers = Object.create(null);
 
 serializers.json = {
   // Test whether this “file” seems to be on the correct format.
-  test: function(file) {
+  test: function (file) {
     return file.path && /\.json5?$/i.test(file.path);
   },
 
   // Unserialize the content of the file.
-  unserialize: function(file) {
+  unserialize: function (file) {
     return parseJson(String(file.content));
   },
 
   // Serialize the value to a string/buffer.
-  serialize: function(value, opts) {
+  serialize: function (value, opts) {
     opts || (opts = {});
     const indent = "indent" in opts ? opts.indent : 2;
 
@@ -54,13 +54,13 @@ try {
   const ini = require("ini");
 
   serializers.ini = {
-    test: function(file) {
+    test: function (file) {
       return file.path && /\.ini$/i.test(file.path);
     },
-    unserialize: function(file) {
+    unserialize: function (file) {
       return ini.decode(String(file.content));
     },
-    serialize: function(value) {
+    serialize: function (value) {
       return ini.encode(value);
     },
   };
@@ -91,13 +91,13 @@ try {
   }
 
   serializers.yaml = {
-    test: function(file) {
+    test: function (file) {
       return file.path && /\.yaml$/i.test(file.path);
     },
-    unserialize: function(file) {
+    unserialize: function (file) {
       return load(String(file.content));
     },
-    serialize: function(value, opts) {
+    serialize: function (value, opts) {
       opts || (opts = {});
       const indent = "indent" in opts ? opts.indent : 2;
 
@@ -110,13 +110,13 @@ try {
 
 // --------------------------------------------------------------------
 
-const detectFormat = function(file) {
-  return findKey(serializers, function(serializer) {
+const detectFormat = function (file) {
+  return findKey(serializers, function (serializer) {
     return serializer.test(file);
   });
 };
 
-const serialize = function(value, format, opts) {
+const serialize = function (value, format, opts) {
   let buffer = serializers[format].serialize(value, opts);
 
   if (!(buffer instanceof Buffer)) {
@@ -126,7 +126,7 @@ const serialize = function(value, format, opts) {
   return buffer;
 };
 
-const unserialize = function(file, format) {
+const unserialize = function (file, format) {
   format || (format = detectFormat(file));
 
   if (!format) {

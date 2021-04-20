@@ -31,8 +31,8 @@ function resolvePaths(value, base) {
   }
 
   if (value !== null && typeof value === "object") {
-    return pMap(Object.keys(value), key =>
-      resolvePaths(value[key], base).then(resolved => {
+    return pMap(Object.keys(value), (key) =>
+      resolvePaths(value[key], base).then((resolved) => {
         value[key] = resolved;
       })
     ).then(() => value);
@@ -63,7 +63,7 @@ function load(
     whitelist = new Set(whitelist);
   }
   const entryOpts = { appDir, appName };
-  return pMap(entries, entry => {
+  return pMap(entries, (entry) => {
     if (useWhitelist && !whitelist.has(entry.name)) {
       return [];
     }
@@ -72,9 +72,9 @@ function load(
     const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
     return entry.read(entryOpts, dir);
   })
-    .then(files => {
+    .then((files) => {
       files = flatten(files);
-      return pMap(files, file => {
+      return pMap(files, (file) => {
         try {
           const data = unserialize(file);
           debug(file.path);
@@ -86,7 +86,7 @@ function load(
         }
       });
     })
-    .then(data =>
+    .then((data) =>
       data.reduce((acc, cfg) => {
         if (cfg !== undefined) {
           merge(acc, cfg);
@@ -108,7 +108,7 @@ exports.watch = function watch({ appName, ...opts }, cb) {
 
     const dirs = [];
     const entryOpts = { appName, appDir };
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       const dirFn = entry.dir;
       const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
       if (dir !== undefined) {
@@ -123,7 +123,7 @@ exports.watch = function watch({ appName, ...opts }, cb) {
     });
 
     const loadWrapper = () => {
-      load(appName, opts).then(config => cb(undefined, config), cb);
+      load(appName, opts).then((config) => cb(undefined, config), cb);
     };
 
     watcher

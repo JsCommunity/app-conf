@@ -18,8 +18,8 @@ const pMap = require("./_pMap");
 // ===================================================================
 
 function readFile(path) {
-  return realpath(path).then(function(path) {
-    return fs$readFile(path).then(function(buffer) {
+  return realpath(path).then(function (path) {
+    return fs$readFile(path).then(function (buffer) {
       return {
         path: path,
         content: buffer,
@@ -43,21 +43,21 @@ module.exports = [
   // Default vendor configuration.
   {
     name: "vendor",
-    dir: opts => opts.appDir,
+    dir: (opts) => opts.appDir,
     read: (_, dir) => pMap(glob(j(dir, "config.*")), readFile),
   },
 
   // Configuration for the whole system.
   {
     name: "system",
-    dir: opts => j("/etc", opts.appName),
+    dir: (opts) => j("/etc", opts.appName),
     read: (_, dir) => pMap(glob(j(dir, "config.*")), readFile),
   },
 
   // Configuration for the current user.
   {
     name: "global",
-    dir: opts => {
+    dir: (opts) => {
       const configDir = xdgBasedir.config;
       return configDir && j(configDir, opts.appName);
     },
@@ -84,7 +84,7 @@ module.exports = [
       }
 
       return pMap(
-        pMap(paths.reverse(), path =>
+        pMap(paths.reverse(), (path) =>
           glob(path, {
             silent: true,
           }).catch(ignoreAccessErrors)
