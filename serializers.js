@@ -51,6 +51,24 @@ serializers.json = {
 // Optional dependency.
 try {
   // eslint-disable-next-line node/no-missing-require
+  const CSON = require("cson-parse");
+
+  serializers.cson = {
+    test: function (file) {
+      return file.path && /\.cson$/i.test(file.path);
+    },
+    unserialize: function (file) {
+      return CSON.parse(String(file.content));
+    },
+    serialize: function (value) {
+      return CSON.stringify(value);
+    },
+  };
+} catch (error) {}
+
+// Optional dependency.
+try {
+  // eslint-disable-next-line node/no-missing-require
   const ini = require("ini");
 
   serializers.ini = {
