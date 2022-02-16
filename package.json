@@ -13,11 +13,13 @@
   },
   "files": [
     "_pMap.js",
+    "cli.js",
     "entries.js",
     "index.js",
     "serializers.js",
     "unknown-format-error.js"
   ],
+  "bin": "./cli.js",
   "engines": {
     "node": ">=8.10"
   },
