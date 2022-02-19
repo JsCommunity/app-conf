@@ -44,7 +44,7 @@ module.exports = [
   {
     name: "vendor",
     dir: (opts) => opts.appDir,
-    read: (_, dir) => pMap(glob(j(dir, "config.*")), readFile),
+    read: (_, dir) => dir && pMap(glob(j(dir, "config.*")), readFile),
   },
 
   // Configuration for the whole system.
@@ -61,8 +61,7 @@ module.exports = [
       const configDir = xdgBasedir.config;
       return configDir && j(configDir, opts.appName);
     },
-    read: (_, dir) =>
-      dir === undefined ? [] : pMap(glob(j(dir, "config.*")), readFile),
+    read: (_, dir) => dir && pMap(glob(j(dir, "config.*")), readFile),
   },
 
   // Configuration of the current project (local to the file

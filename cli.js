@@ -19,18 +19,11 @@ ${name} v${version}
   const [appName, appDir] = args;
 
   stdout.write(
-    inspect(
-      await load(appName, {
-        appDir,
-
-        // ignore vendor config (not relevant for this CLI)
-        entries:
-          appDir === undefined ? ["system", "global", "local"] : undefined,
-
-        ignoreUnknownFormats: true,
-      }),
-      { colors: true, depth: Infinity, sorted: true }
-    )
+    inspect(await load(appName, { appDir, ignoreUnknownFormats: true }), {
+      colors: true,
+      depth: Infinity,
+      sorted: true,
+    })
   );
   stdout.write("\n");
 }

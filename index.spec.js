@@ -45,7 +45,9 @@ describe("appConf", function () {
 
   describe("#load()", function () {
     it("works", function () {
-      return loadConfig("test-app-conf").then(function (config) {
+      return loadConfig("test-app-conf", {
+        appDir: "../..",
+      }).then(function (config) {
         assert.deepStrictEqual(config, {
           "local.0": true,
           "local.1": true,

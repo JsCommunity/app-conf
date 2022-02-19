@@ -43,20 +43,9 @@ function resolvePaths(value, base) {
 
 // ===================================================================
 
-// Does not work properly in many cases (e.g. with pnpm)
-//
-// It's better for the user to pass an `appDir` option but we need to
-// keep this for compatibility.
-const DEFAULT_APP_DIR = dirname(dirname(__dirname));
-
 function load(
   appName,
-  {
-    appDir = DEFAULT_APP_DIR,
-    defaults,
-    entries: whitelist,
-    ignoreUnknownFormats = false,
-  } = {}
+  { appDir, defaults, entries: whitelist, ignoreUnknownFormats = false } = {}
 ) {
   const useWhitelist = whitelist !== undefined;
   if (useWhitelist) {
@@ -70,7 +59,7 @@ function load(
 
     const dirFn = entry.dir;
     const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
-    return entry.read(entryOpts, dir);
+    return entry.read(entryOpts, dir) || [];
   })
     .then((files) => {
       files = flatten(files);
@@ -101,13 +90,8 @@ exports.load = load;
 
 exports.watch = function watch({ appName, ...opts }, cb) {
   return new Promise((resolve, reject) => {
-    const { appDir } = opts;
-    if (appDir === undefined) {
-      throw new TypeError("appDir must be defined");
-    }
-
     const dirs = [];
-    const entryOpts = { appName, appDir };
+    const entryOpts = { appName, appDir: opts.appDir };
     entries.forEach((entry) => {
       const dirFn = entry.dir;
       const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;

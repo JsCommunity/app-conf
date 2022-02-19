@@ -21,6 +21,8 @@ var loadConfig = require("app-conf").load;
 
 loadConfig("my-application", {
   // this is the directory where the vendor conf is stored
+  //
+  // vendor config will not be loaded if not defined
   appDir: __dirname,
 
   // default config values
@@ -61,9 +63,6 @@ const watchConfig = require("app-conf").watch;
 
 const stopWatching = await watchConfig(
   {
-    // contrary to `load`, this option is required
-    appDir: __dirname,
-
     // contrary to `load`, this is part of the options
     appName: "my-application",
 
