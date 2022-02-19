@@ -40,31 +40,25 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "husky": "^4",
-    "jest": "^26.6.3",
     "lint-staged": "^10",
     "mock-fs": "^5.1.2",
     "prettier": "^2.2.1",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "tap": "^15.1.6"
   },
   "scripts": {
-    "dev-test": "jest --bail --watch",
-    "test": "jest"
+    "dev-test": "tap --no-check-coverage --watch",
+    "test": "tap --no-check-coverage"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm run test"
     }
-  },
-  "jest": {
-    "collectCoverage": true,
-    "testEnvironment": "node",
-    "testRegex": "\\.spec\\.js$"
   },
   "lint-staged": {
     "*.js": [
       "prettier --write",
-      "eslint --ignore-pattern '!*'",
-      "jest --findRelatedTests --passWithNoTests"
+      "eslint --ignore-pattern '!*'"
     ]
   }
 }

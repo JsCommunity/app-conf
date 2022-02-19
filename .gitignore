@@ -2,6 +2,9 @@
 /dist/
 /node_modules/
 
+# nyc test coverage
+/.nyc_output/
+
 npm-debug.log
 npm-debug.log.*
 pnpm-debug.log

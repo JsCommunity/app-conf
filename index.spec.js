@@ -1,12 +1,10 @@
 "use strict";
 
-/* eslint-env jest */
-
-// ===================================================================
-
 // This should be require first, otherwise fs-promise does not use it.
 const mock = require("mock-fs");
 
+const { afterEach, beforeEach, describe, it } = require("tap").mocha;
+const assert = require("assert");
 const homedir = require("os").homedir;
 
 const loadConfig = require("./").load;
@@ -14,7 +12,7 @@ const loadConfig = require("./").load;
 // ===================================================================
 
 describe("appConf", function () {
-  beforeAll(function () {
+  beforeEach(function () {
     mock({
       // Vendor config
       "../../config.json": '{ "vendor": true, "foo": "vendor" }',
@@ -41,14 +39,14 @@ describe("appConf", function () {
     });
   });
 
-  afterAll(function () {
+  afterEach(function () {
     mock.restore();
   });
 
   describe("#load()", function () {
     it("works", function () {
       return loadConfig("test-app-conf").then(function (config) {
-        expect(config).toEqual({
+        assert.deepStrictEqual(config, {
           "local.0": true,
           "local.1": true,
           system: true,
@@ -67,7 +65,7 @@ describe("appConf", function () {
       return loadConfig("test-app-conf", {
         entries: ["local", "system"],
       }).then(function (config) {
-        expect(config).toEqual({
+        assert.deepStrictEqual(config, {
           "local.0": true,
           "local.1": true,
           system: true,
