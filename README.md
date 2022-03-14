@@ -25,6 +25,9 @@ loadConfig("my-application", {
   // vendor config will not be loaded if not defined
   appDir: __dirname,
 
+  // equivalent of `__dirname` for ECMAScript Modules:
+  //appDir: new URL('.', import.meta.url).pathname,
+
   // default config values
   defaults: {},
 
