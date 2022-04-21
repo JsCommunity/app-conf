@@ -86,6 +86,8 @@ const stopWatching = await watchConfig(
 );
 ```
 
+> Note: the vendor config IS NOT watched, but it's loaded as expected.
+
 ### CLI
 
 A basic CLI is available to show the config:

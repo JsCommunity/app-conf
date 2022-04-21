@@ -93,6 +93,14 @@ exports.watch = function watch({ appName, ...opts }, cb) {
     const dirs = [];
     const entryOpts = { appName, appDir: opts.appDir };
     entries.forEach((entry) => {
+      // vendor config should not change and is therefore not watched
+      //
+      // otherwise it could interfere if the program is running during
+      // uninstall/reinstall
+      if (entry.name === "vendor") {
+        return;
+      }
+
       const dirFn = entry.dir;
       const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
       if (dir !== undefined) {
