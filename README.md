@@ -92,7 +92,7 @@ A basic CLI is available to show the config:
 
 ```
 > ./node_modules/.bin/app-conf
-Usage: app-conf <appName> [<appDir>]
+Usage: app-conf [--watch | -w] <appName> [<appDir>]
 
 app-conf v1.0.0
 > ./node_modules/.bin/app-conf my-app .

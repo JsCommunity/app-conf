@@ -2,29 +2,51 @@
 
 "use strict";
 
-const { load } = require("./index.js");
+const { load, watch } = require("./index.js");
 const { inspect } = require("util");
 
-async function main(args) {
-  const { stdout } = process;
+const { stdout } = process;
 
-  if (args.length === 0 || args.some((_) => _ === "-h" || _ === "--help")) {
-    const { name, version } = require("./package.json");
-    return stdout.write(`Usage: ${name} <appName> [<appDir>]
-
-${name} v${version}
-`);
-  }
-
-  const [appName, appDir] = args;
-
+function print(config) {
   stdout.write(
-    inspect(await load(appName, { appDir, ignoreUnknownFormats: true }), {
+    inspect(config, {
       colors: true,
       depth: Infinity,
       sorted: true,
     })
   );
   stdout.write("\n");
+}
+
+async function main(args) {
+  if (args.length === 0 || args.some((_) => _ === "-h" || _ === "--help")) {
+    const { name, version } = require("./package.json");
+    return stdout.write(`Usage: ${name} [--watch | -w] <appName> [<appDir>]
+
+${name} v${version}
+`);
+  }
+
+  const watchChanges = args[0] === "--watch" || args[0] === "-w";
+  if (watchChanges) {
+    args.shift();
+  }
+
+  const [appName, appDir] = args;
+
+  const opts = { appDir, appName, ignoreUnknownFormats: true };
+
+  if (watchChanges) {
+    await watch(opts, (error, config) => {
+      console.log("--", new Date());
+      if (error !== undefined) {
+        console.warn(error);
+        return;
+      }
+      print(config);
+    });
+  } else {
+    print(await load(appName, opts));
+  }
 }
 main(process.argv.slice(2)).catch(console.error.bind(console, "FATAL:"));
