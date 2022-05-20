@@ -21,7 +21,7 @@ function readFile(path) {
   return realpath(path).then(function (path) {
     return fs$readFile(path).then(function (buffer) {
       return {
-        path: path,
+        path,
         content: buffer,
       };
     });

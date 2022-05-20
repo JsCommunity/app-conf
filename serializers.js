@@ -7,12 +7,12 @@ const findKey = require("lodash/findKey");
 const formatJson = JSON.stringify;
 const parseJson = (function () {
   try {
-    // eslint-disable-next-line node/no-extraneous-require
+    // eslint-disable-next-line n/no-extraneous-require
     return require("json5").parse;
   } catch (_) {}
 
   try {
-    // eslint-disable-next-line node/no-extraneous-require
+    // eslint-disable-next-line n/no-extraneous-require
     const stripJsonComments = require("strip-json-comments");
     return function parseJson(json) {
       return JSON.parse(stripJsonComments(json));
@@ -50,7 +50,7 @@ serializers.json = {
 
 // Optional dependency.
 try {
-  // eslint-disable-next-line node/no-missing-require
+  // eslint-disable-next-line n/no-missing-require
   const CSON = require("cson-parse");
 
   serializers.cson = {
@@ -68,7 +68,7 @@ try {
 
 // Optional dependency.
 try {
-  // eslint-disable-next-line node/no-missing-require
+  // eslint-disable-next-line n/no-missing-require
   const ini = require("ini");
 
   serializers.ini = {
@@ -85,7 +85,7 @@ try {
 } catch (error) {}
 
 try {
-  // eslint-disable-next-line node/no-missing-require
+  // eslint-disable-next-line n/no-missing-require
   const { parse, stringify } = require("@iarna/toml");
 
   serializers.toml = {
@@ -97,7 +97,7 @@ try {
 
 // Optional dependency.
 try {
-  // eslint-disable-next-line node/no-extraneous-require
+  // eslint-disable-next-line n/no-extraneous-require
   const yaml = require("js-yaml");
 
   let { dump, load } = yaml;
@@ -120,7 +120,7 @@ try {
       const indent = "indent" in opts ? opts.indent : 2;
 
       return dump(value, {
-        indent: indent,
+        indent,
       });
     },
   };
