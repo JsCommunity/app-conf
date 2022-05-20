@@ -2,6 +2,11 @@
 
 "use strict";
 
+const { env } = process;
+if (env.DEBUG === undefined) {
+  env.DEBUG = "*";
+}
+
 const { load, watch } = require("./index.js");
 const { inspect } = require("util");
 
