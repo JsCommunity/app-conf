@@ -100,7 +100,7 @@ app-conf v1.0.0
 > ./node_modules/.bin/app-conf my-app .
 ```
 
-> Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your appliacation directory and not from a global install.
+> Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your application directory and not from a global install.
 
 ## Contributing
 
