@@ -9,10 +9,15 @@ if (env.DEBUG === undefined) {
 
 const { load, watch } = require("./index.js");
 const { inspect } = require("util");
+const get = require("lodash/get.js");
+const pick = require("lodash/pick.js");
 
 const { stdout } = process;
 
-function print(config) {
+function print(paths, config) {
+  if (paths.length !== 0) {
+    config = paths.length === 1 ? get(config, paths[0]) : pick(config, paths);
+  }
   stdout.write(
     inspect(config, {
       colors: true,
@@ -24,34 +29,57 @@ function print(config) {
 }
 
 async function main(args) {
-  if (args.length === 0 || args.some((_) => _ === "-h" || _ === "--help")) {
+  const cliOpts = {
+    _: [],
+    help: false,
+    paths: [],
+    watch: false,
+  };
+  for (let i = 0, n = args.length; i < n; ) {
+    const arg = args[i++];
+    if (arg[0] === "-") {
+      if (arg === "-h" || arg === "--help") {
+        cliOpts.help = true;
+      } else if (arg === "-w" || arg === "--watch") {
+        cliOpts.watch = true;
+      } else if (arg === "-p" || arg === "--path") {
+        if (i < n) {
+          cliOpts.paths.push(args[i++]);
+        } else {
+          throw new Error("missing argument for --path option");
+        }
+      } else {
+        throw new Error("unknown option: " + arg);
+      }
+    } else {
+      cliOpts._.push(arg);
+    }
+  }
+
+  if (cliOpts._.length === 0 || cliOpts.help) {
     const { name, version } = require("./package.json");
-    return stdout.write(`Usage: ${name} [--watch | -w] <appName> [<appDir>]
+    return stdout.write(`Usage: ${name} [--watch | -w] [-p <path>]... <appName> [<appDir>]
 
 ${name} v${version}
 `);
   }
 
-  const watchChanges = args[0] === "--watch" || args[0] === "-w";
-  if (watchChanges) {
-    args.shift();
-  }
-
-  const [appName, appDir] = args;
+  const [appName, appDir] = cliOpts._;
 
   const opts = { appDir, appName, ignoreUnknownFormats: true };
+  const printPaths = print.bind(undefined, cliOpts.paths);
 
-  if (watchChanges) {
+  if (cliOpts.watch) {
     await watch(opts, (error, config) => {
       console.log("--", new Date());
       if (error !== undefined) {
         console.warn(error);
         return;
       }
-      print(config);
+      printPaths(config);
     });
   } else {
-    print(await load(appName, opts));
+    printPaths(await load(appName, opts));
   }
 }
 main(process.argv.slice(2)).catch(console.error.bind(console, "FATAL:"));
