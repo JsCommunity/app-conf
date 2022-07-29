@@ -29,7 +29,7 @@ function readFile(path) {
 }
 
 function ignoreAccessErrors(error) {
-  if (error.cause.code !== "EACCES") {
+  if (error.code !== "EACCES") {
     throw error;
   }
 
