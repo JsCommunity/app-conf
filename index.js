@@ -9,9 +9,9 @@ const resolvePath = require("path").resolve;
 
 const debug = require("debug")("app-conf");
 const flatten = require("lodash/flatten");
-const merge = require("lodash/merge");
 
 const entries = require("./entries");
+const merge = require("./_merge");
 const pMap = require("./_pMap");
 const UnknownFormatError = require("./unknown-format-error");
 const unserialize = require("./serializers").unserialize;
