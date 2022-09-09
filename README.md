@@ -94,9 +94,9 @@ A basic CLI is available to show the config:
 
 ```
 > ./node_modules/.bin/app-conf
-Usage: app-conf [--watch | -w] <appName> [<appDir>]
+Usage: app-conf [--json | -j] [--watch | -w] [-p <path>]... <appName> [<appDir>]
 
-app-conf v1.0.0
+app-conf v2.2.1
 > ./node_modules/.bin/app-conf my-app .
 ```
 

@@ -14,16 +14,21 @@ const pick = require("lodash/pick.js");
 
 const { stdout } = process;
 
+let useJson = !stdout.isTTY;
+
 function print(paths, config) {
   if (paths.length !== 0) {
     config = paths.length === 1 ? get(config, paths[0]) : pick(config, paths);
   }
+
   stdout.write(
-    inspect(config, {
-      colors: true,
-      depth: Infinity,
-      sorted: true,
-    })
+    useJson
+      ? JSON.stringify(config, null, 2)
+      : inspect(config, {
+          colors: true,
+          depth: Infinity,
+          sorted: true,
+        })
   );
   stdout.write("\n");
 }
@@ -40,6 +45,8 @@ async function main(args) {
     if (arg[0] === "-") {
       if (arg === "-h" || arg === "--help") {
         cliOpts.help = true;
+      } else if (arg === "-j" || arg === "--json") {
+        useJson = true;
       } else if (arg === "-w" || arg === "--watch") {
         cliOpts.watch = true;
       } else if (arg === "-p" || arg === "--path") {
@@ -58,7 +65,7 @@ async function main(args) {
 
   if (cliOpts._.length === 0 || cliOpts.help) {
     const { name, version } = require("./package.json");
-    return stdout.write(`Usage: ${name} [--watch | -w] [-p <path>]... <appName> [<appDir>]
+    return stdout.write(`Usage: ${name} [--json | -j] [--watch | -w] [-p <path>]... <appName> [<appDir>]
 
 ${name} v${version}
 `);
