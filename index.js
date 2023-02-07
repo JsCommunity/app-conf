@@ -21,24 +21,21 @@ const unserialize = require("./serializers").unserialize;
 const RELATIVE_PATH_RE = /^\.{1,2}[/\\]/;
 function resolvePaths(value, base) {
   if (typeof value === "string") {
-    return Promise.resolve(
-      value[0] === "~" && (value[1] === "/" || value[1] === "\\")
-        ? homedir() + value.slice(1)
-        : RELATIVE_PATH_RE.test(value)
-        ? resolvePath(base, value)
-        : value
-    );
+    return value[0] === "~" && (value[1] === "/" || value[1] === "\\")
+      ? homedir() + value.slice(1)
+      : RELATIVE_PATH_RE.test(value)
+      ? resolvePath(base, value)
+      : value;
   }
 
   if (value !== null && typeof value === "object") {
-    return pMap(Object.keys(value), (key) =>
-      resolvePaths(value[key], base).then((resolved) => {
-        value[key] = resolved;
-      })
-    ).then(() => value);
+    for (const key of Object.keys(value)) {
+      value[key] = resolvePaths(value[key], base);
+    }
+    return value;
   }
 
-  return Promise.resolve(value);
+  return value;
 }
 
 // ===================================================================
