@@ -86,9 +86,9 @@ module.exports = [
         pMap(paths.reverse(), (path) =>
           glob(path, {
             silent: true,
-          }).catch(ignoreAccessErrors)
+          }).catch(ignoreAccessErrors),
         ).then(flatten),
-        readFile
+        readFile,
       );
     },
   },

@@ -24,8 +24,8 @@ function resolvePaths(value, base) {
     return value[0] === "~" && (value[1] === "/" || value[1] === "\\")
       ? homedir() + value.slice(1)
       : RELATIVE_PATH_RE.test(value)
-      ? resolvePath(base, value)
-      : value;
+        ? resolvePath(base, value)
+        : value;
   }
 
   if (value !== null && typeof value === "object") {
@@ -42,7 +42,7 @@ function resolvePaths(value, base) {
 
 function load(
   appName,
-  { appDir, defaults, entries: whitelist, ignoreUnknownFormats = false } = {}
+  { appDir, defaults, entries: whitelist, ignoreUnknownFormats = false } = {},
 ) {
   const useWhitelist = whitelist !== undefined;
   if (useWhitelist) {
@@ -73,12 +73,15 @@ function load(
       });
     })
     .then((data) =>
-      data.reduce((acc, cfg) => {
-        if (cfg !== undefined) {
-          merge(acc, cfg);
-        }
-        return acc;
-      }, merge({}, defaults))
+      data.reduce(
+        (acc, cfg) => {
+          if (cfg !== undefined) {
+            merge(acc, cfg);
+          }
+          return acc;
+        },
+        merge({}, defaults),
+      ),
     );
 }
 exports.load = load;
@@ -132,7 +135,7 @@ exports.watch = function watch({ appName, initialLoad = false, ...opts }, cb) {
             (error) => {
               const rejectOriginal = () => reject(error);
               unsubscribe().then(rejectOriginal, rejectOriginal);
-            }
+            },
           );
         } else {
           resolve(unsubscribe);

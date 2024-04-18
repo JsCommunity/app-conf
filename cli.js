@@ -28,7 +28,7 @@ function print(paths, config) {
           colors: true,
           depth: Infinity,
           sorted: true,
-        })
+        }),
   );
   stdout.write("\n");
 }

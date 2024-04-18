@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function pMap(array, iteratee) {
   const { then } = array;
   return typeof then === "function"

@@ -1,6 +1,8 @@
 "use strict";
 
-const t = require("tap");
+const assert = require("assert").strict;
+const test = require("test");
+
 const merge = require("./_merge.js");
 
 Object.entries({
@@ -21,7 +23,7 @@ Object.entries({
               return "target";
             },
           },
-        }
+        },
       ),
       { foo: "source", bar: "target", qux: "target" },
     ],
@@ -41,9 +43,8 @@ Object.entries({
     ["target", "source"],
   ],
 }).forEach(([title, data]) => {
-  t.test(title, function (t) {
+  test(title, function (t) {
     const [target, source, expected] = data;
-    t.strictSame(merge(target, source), expected);
-    t.end();
+    assert.deepEqual(merge(target, source), expected);
   });
 });

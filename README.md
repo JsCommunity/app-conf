@@ -93,7 +93,7 @@ const stopWatching = await watchConfig(
     }
 
     console.log("config has been loaded", config);
-  }
+  },
 );
 ```
 

@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function merge(target, source) {
   if (source === undefined) {
     return target;
