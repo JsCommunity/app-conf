@@ -118,7 +118,7 @@ exports.watch = function watch({ appName, ...opts }, cb) {
     watcher
       .on("all", loadWrapper)
       .once("error", reject)
-      .once("ready", (...args) => {
+      .once("ready", () => {
         loadWrapper();
         resolve(function unsubscribe() {
           return watcher.close();
