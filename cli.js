@@ -73,7 +73,12 @@ ${name} v${version}
 
   const [appName, appDir] = cliOpts._;
 
-  const opts = { appDir, appName, ignoreUnknownFormats: true };
+  const opts = {
+    appDir,
+    appName,
+    ignoreUnknownFormats: true,
+    initialLoad: true,
+  };
   const printPaths = print.bind(undefined, cliOpts.paths);
 
   if (cliOpts.watch) {

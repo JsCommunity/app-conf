@@ -85,7 +85,7 @@ exports.load = load;
 
 // ===================================================================
 
-exports.watch = function watch({ appName, ...opts }, cb) {
+exports.watch = function watch({ appName, initialLoad = false, ...opts }, cb) {
   return new Promise((resolve, reject) => {
     const dirs = [];
     const entryOpts = { appName, appDir: opts.appDir };
@@ -119,10 +119,24 @@ exports.watch = function watch({ appName, ...opts }, cb) {
       .on("all", loadWrapper)
       .once("error", reject)
       .once("ready", () => {
-        loadWrapper();
-        resolve(function unsubscribe() {
+        function unsubscribe() {
           return watcher.close();
-        });
+        }
+
+        if (initialLoad) {
+          load(appName, opts).then(
+            (config) => {
+              cb(undefined, config);
+              resolve(unsubscribe);
+            },
+            (error) => {
+              const rejectOriginal = () => reject(error);
+              unsubscribe().then(rejectOriginal, rejectOriginal);
+            }
+          );
+        } else {
+          resolve(unsubscribe);
+        }
       });
   });
 };

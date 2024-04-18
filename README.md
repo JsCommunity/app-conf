@@ -69,6 +69,17 @@ const stopWatching = await watchConfig(
     // contrary to `load`, this is part of the options
     appName: "my-application",
 
+    // if set to true the configuration will be loaded before waiting for
+    // changes
+    //
+    // in that case, the returned promise will reject if the initial load
+    // failed, or will resolve after the callback has been called with the
+    // initial configuration
+    //
+    // because the async call to `watchConfig()` will not have returned yet,
+    // `stopWatching()` will not be available in this first callback call
+    initialLoad: false,
+
     // all other options are passed to load()
   },
   (error, config) => {
