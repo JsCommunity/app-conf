@@ -99,6 +99,16 @@ const stopWatching = await watchConfig(
 
 > Note: the vendor config IS NOT watched, but it's loaded as expected.
 
+### `parse(path)`
+
+> Low level function which parses a file using app-conf logic, automatically handling formats and resolving paths.
+
+```js
+const parseConfig = require("app-conf").parse;
+
+const config = await parseConfig("config.toml");
+```
+
 ### CLI
 
 A basic CLI is available to show the config:

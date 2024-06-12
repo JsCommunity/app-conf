@@ -4,9 +4,7 @@
 
 const promisify = require("promise-toolbox/promisify");
 
-const fs$readFile = promisify(require("fs").readFile);
 const j = require("path").join;
-const realpath = promisify(require("fs").realpath);
 const resolvePath = require("path").resolve;
 
 const flatten = require("lodash/flatten");
@@ -16,17 +14,6 @@ const xdgBasedir = require("xdg-basedir");
 const pMap = require("./_pMap");
 
 // ===================================================================
-
-function readFile(path) {
-  return realpath(path).then(function (path) {
-    return fs$readFile(path).then(function (buffer) {
-      return {
-        path,
-        content: buffer,
-      };
-    });
-  });
-}
 
 function ignoreAccessErrors(error) {
   if (error.code !== "EACCES") {
@@ -44,14 +31,14 @@ module.exports = [
   {
     name: "vendor",
     dir: (opts) => opts.appDir,
-    read: (_, dir) => dir && pMap(glob(j(dir, "config.*")), readFile),
+    list: (_, dir) => dir && glob(j(dir, "config.*")),
   },
 
   // Configuration for the whole system.
   {
     name: "system",
     dir: (opts) => j("/etc", opts.appName),
-    read: (_, dir) => pMap(glob(j(dir, "config.*")), readFile),
+    list: (_, dir) => glob(j(dir, "config.*")),
   },
 
   // Configuration for the current user.
@@ -61,14 +48,14 @@ module.exports = [
       const configDir = xdgBasedir.config;
       return configDir && j(configDir, opts.appName);
     },
-    read: (_, dir) => dir && pMap(glob(j(dir, "config.*")), readFile),
+    list: (_, dir) => dir && glob(j(dir, "config.*")),
   },
 
   // Configuration of the current project (local to the file
   // hierarchy).
   {
     name: "local",
-    read(opts) {
+    list(opts) {
       const { appName } = opts;
 
       // Compute the list of paths from the current directory to the
@@ -82,14 +69,11 @@ module.exports = [
         dir = resolvePath(dir, "..");
       }
 
-      return pMap(
-        pMap(paths.reverse(), (path) =>
-          glob(path, {
-            silent: true,
-          }).catch(ignoreAccessErrors),
-        ).then(flatten),
-        readFile,
-      );
+      return pMap(paths.reverse(), (path) =>
+        glob(path, {
+          silent: true,
+        }).catch(ignoreAccessErrors),
+      ).then(flatten);
     },
   },
 ];

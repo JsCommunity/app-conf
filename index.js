@@ -13,6 +13,7 @@ const flatten = require("lodash/flatten");
 const entries = require("./entries");
 const merge = require("./_merge");
 const pMap = require("./_pMap");
+const readFile = require("./_readFile");
 const UnknownFormatError = require("./unknown-format-error");
 const unserialize = require("./serializers").unserialize;
 
@@ -56,15 +57,13 @@ function load(
 
     const dirFn = entry.dir;
     const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
-    return entry.read(entryOpts, dir) || [];
+    return entry.list(entryOpts, dir) || [];
   })
     .then((files) => {
       files = flatten(files);
-      return pMap(files, (file) => {
+      return pMap(files, async (file) => {
         try {
-          const data = unserialize(file);
-          debug(file.path);
-          return resolvePaths(data, dirname(file.path));
+          return await parse(file);
         } catch (error) {
           if (!(ignoreUnknownFormats && error instanceof UnknownFormatError)) {
             throw error;
@@ -85,6 +84,16 @@ function load(
     );
 }
 exports.load = load;
+
+// ===================================================================
+
+async function parse(path) {
+  const file = await readFile(path);
+  const data = unserialize(file);
+  debug(file.path);
+  return resolvePaths(data, dirname(file.path));
+}
+exports.parse = parse;
 
 // ===================================================================
 
