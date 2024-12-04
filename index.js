@@ -19,6 +19,8 @@ const unserialize = require("./serializers").unserialize;
 
 // ===================================================================
 
+const clone = (value) => JSON.parse(JSON.stringify(value));
+
 const RELATIVE_PATH_RE = /^\.{1,2}[/\\]/;
 function resolvePaths(value, base) {
   if (typeof value === "string") {
@@ -79,7 +81,7 @@ function load(
           }
           return acc;
         },
-        merge({}, defaults),
+        defaults === undefined ? {} : clone(defaults),
       ),
     );
 }
