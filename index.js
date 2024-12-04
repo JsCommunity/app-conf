@@ -99,7 +99,18 @@ exports.parse = parse;
 
 // ===================================================================
 
-exports.watch = function watch({ appName, initialLoad = false, ...opts }, cb) {
+const ALL_ENTRIES = entries.map((_) => _.name);
+
+exports.watch = function watch(
+  {
+    appName,
+    defaults,
+    entries: whitelist = ALL_ENTRIES,
+    initialLoad = false,
+    ...opts
+  },
+  cb,
+) {
   return new Promise((resolve, reject) => {
     const dirs = [];
     const entryOpts = { appName, appDir: opts.appDir };
@@ -132,22 +143,33 @@ exports.watch = function watch({ appName, initialLoad = false, ...opts }, cb) {
     watcher
       .on("all", loadWrapper)
       .once("error", reject)
-      .once("ready", () => {
+      .once("ready", async () => {
         function unsubscribe() {
           return watcher.close();
         }
 
+        // vendor config is only read once and merged to defaults to avoid issues
+        // in case it has been deleted and another entry triggers a reload
+        if (whitelist.includes("vendor")) {
+          opts.entries = ["vendor"];
+
+          const vendor = await load(appName, opts);
+
+          opts.defaults =
+            defaults === undefined ? vendor : merge(clone(defaults), vendor);
+          opts.entries = whitelist.filter((_) => _ !== "vendor");
+        }
+
         if (initialLoad) {
-          load(appName, opts).then(
-            (config) => {
-              cb(undefined, config);
-              resolve(unsubscribe);
-            },
-            (error) => {
-              const rejectOriginal = () => reject(error);
-              unsubscribe().then(rejectOriginal, rejectOriginal);
-            },
-          );
+          try {
+            cb(undefined, await load(appName, opts));
+            resolve(unsubscribe);
+          } catch (error) {
+            try {
+              await unsubscribe();
+            } catch (_) {}
+            reject(error);
+          }
         } else {
           resolve(unsubscribe);
         }
