@@ -43,7 +43,7 @@ Object.entries({
     ["target", "source"],
   ],
 }).forEach(([title, data]) => {
-  test(title, function (t) {
+  test(title, function () {
     const [target, source, expected] = data;
     assert.deepEqual(merge(target, source), expected);
   });

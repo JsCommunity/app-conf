@@ -2,8 +2,4 @@
 
 // ===================================================================
 
-const makeError = require("make-error");
-
-// ===================================================================
-
-module.exports = makeError("UnknownFormatError");
+module.exports = class UnknownFormatError extends Error {};

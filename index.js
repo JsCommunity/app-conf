@@ -167,7 +167,9 @@ exports.watch = function watch(
           } catch (error) {
             try {
               await unsubscribe();
-            } catch (_) {}
+            } catch (_) {
+              /* empty */
+            }
             reject(error);
           }
         } else {

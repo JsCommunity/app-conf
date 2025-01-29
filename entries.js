@@ -2,13 +2,11 @@
 
 // ===================================================================
 
-const promisify = require("promise-toolbox/promisify");
-
 const j = require("path").join;
 const resolvePath = require("path").resolve;
 
+const { glob } = require("glob");
 const flatten = require("lodash/flatten");
-const glob = promisify(require("glob"));
 const xdgBasedir = require("xdg-basedir");
 
 const pMap = require("./_pMap");

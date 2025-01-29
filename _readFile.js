@@ -1,9 +1,6 @@
 "use strict";
 
-const promisify = require("promise-toolbox/promisify");
-
-const fs$readFile = promisify(require("fs").readFile);
-const realpath = promisify(require("fs").realpath);
+const { readFile: fs$readFile, realpath } = require("node:fs/promises");
 
 module.exports = function readFile(path) {
   return realpath(path).then(function (path) {

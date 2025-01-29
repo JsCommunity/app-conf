@@ -7,17 +7,19 @@ const findKey = require("lodash/findKey");
 const formatJson = JSON.stringify;
 const parseJson = (function () {
   try {
-    // eslint-disable-next-line n/no-extraneous-require
     return require("json5").parse;
-  } catch (_) {}
+  } catch (_) {
+    /* empty */
+  }
 
   try {
-    // eslint-disable-next-line n/no-extraneous-require
     const stripJsonComments = require("strip-json-comments");
     return function parseJson(json) {
       return JSON.parse(stripJsonComments(json));
     };
-  } catch (_) {}
+  } catch (_) {
+    /* empty */
+  }
 
   return JSON.parse;
 })();
@@ -50,7 +52,6 @@ serializers.json = {
 
 // Optional dependency.
 try {
-  // eslint-disable-next-line n/no-missing-require
   const CSON = require("cson-parse");
 
   serializers.cson = {
@@ -64,11 +65,12 @@ try {
       return CSON.stringify(value);
     },
   };
-} catch (error) {}
+} catch (_) {
+  /* empty */
+}
 
 // Optional dependency.
 try {
-  // eslint-disable-next-line n/no-missing-require
   const ini = require("ini");
 
   serializers.ini = {
@@ -82,10 +84,11 @@ try {
       return ini.encode(value);
     },
   };
-} catch (error) {}
+} catch (_) {
+  /* empty */
+}
 
 try {
-  // eslint-disable-next-line n/no-missing-require
   const { parse, stringify } = require("@iarna/toml");
 
   serializers.toml = {
@@ -93,11 +96,12 @@ try {
     test: ({ path }) => path !== undefined && /\.toml$/i.test(path),
     unserialize: ({ content }) => parse(String(content)),
   };
-} catch (error) {}
+} catch (_) {
+  /* empty */
+}
 
 // Optional dependency.
 try {
-  // eslint-disable-next-line n/no-extraneous-require
   const yaml = require("js-yaml");
 
   let { dump, load } = yaml;
@@ -124,7 +128,9 @@ try {
       });
     },
   };
-} catch (error) {}
+} catch (_) {
+  /* empty */
+}
 
 // --------------------------------------------------------------------
 
