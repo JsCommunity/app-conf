@@ -121,6 +121,8 @@ app-conf v2.2.1
 > ./node_modules/.bin/app-conf my-app .
 ```
 
+The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or a subset of the configuration. Only top-level keys are supported when multiple `-p` flags are used.
+
 > Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your application directory and not from a global install.
 
 ## Contributing

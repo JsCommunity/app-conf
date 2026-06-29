@@ -6,8 +6,7 @@ const j = require("path").join;
 const resolvePath = require("path").resolve;
 
 const { glob } = require("glob");
-const flatten = require("lodash/flatten");
-const xdgBasedir = require("xdg-basedir");
+const { homedir } = require("os");
 
 const pMap = require("./_pMap");
 
@@ -43,7 +42,7 @@ module.exports = [
   {
     name: "global",
     dir: (opts) => {
-      const configDir = xdgBasedir.config;
+      const configDir = process.env.XDG_CONFIG_HOME || j(homedir(), ".config");
       return configDir && j(configDir, opts.appName);
     },
     list: (_, dir) => dir && glob(j(dir, "config.*")),
@@ -71,7 +70,7 @@ module.exports = [
         glob(path, {
           silent: true,
         }).catch(ignoreAccessErrors),
-      ).then(flatten);
+      ).then((results) => results.flat());
     },
   },
 ];

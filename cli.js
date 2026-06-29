@@ -9,8 +9,6 @@ if (env.DEBUG === undefined) {
 
 const { load, watch } = require("./index.js");
 const { inspect } = require("util");
-const get = require("lodash/get.js");
-const pick = require("lodash/pick.js");
 
 const { stdout } = process;
 
@@ -18,7 +16,12 @@ let useJson = !stdout.isTTY;
 
 function print(paths, config) {
   if (paths.length !== 0) {
-    config = paths.length === 1 ? get(config, paths[0]) : pick(config, paths);
+    config =
+      paths.length === 1
+        ? paths[0].split(".").reduce((o, k) => o?.[k], config)
+        : Object.fromEntries(
+            paths.filter((k) => k in config).map((k) => [k, config[k]]),
+          );
   }
 
   stdout.write(

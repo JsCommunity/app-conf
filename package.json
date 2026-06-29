@@ -28,9 +28,7 @@
   "dependencies": {
     "chokidar": "^4.0.3",
     "debug": "^4.4.0",
-    "glob": "^10.4.5",
-    "lodash": "^4.17.21",
-    "xdg-basedir": "^4.0.0"
+    "glob": "^10.4.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
@@ -46,10 +44,10 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*": [
+    "*": "prettier --ignore-unknown --write",
+    "*.{{,c,m}j,t}s{,x}": [
       "npm test",
-      "prettier --ignore-unknown --write"
-    ],
-    "*.{{,c,m}j,t}s{,x}": "eslint --ignore-pattern '!*'"
+      "eslint --ignore-pattern '!*'"
+    ]
   }
 }

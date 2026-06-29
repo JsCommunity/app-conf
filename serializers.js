@@ -2,8 +2,6 @@
 
 // ===================================================================
 
-const findKey = require("lodash/findKey");
-
 const formatJson = JSON.stringify;
 const parseJson = (function () {
   try {
@@ -135,9 +133,8 @@ try {
 // --------------------------------------------------------------------
 
 const detectFormat = function (file) {
-  return findKey(serializers, function (serializer) {
-    return serializer.test(file);
-  });
+  const entry = Object.entries(serializers).find(([, s]) => s.test(file));
+  return entry && entry[0];
 };
 
 const serialize = function (value, format, opts) {

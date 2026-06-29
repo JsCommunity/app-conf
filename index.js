@@ -8,7 +8,6 @@ const homedir = require("os").homedir;
 const resolvePath = require("path").resolve;
 
 const debug = require("debug")("app-conf");
-const flatten = require("lodash/flatten");
 
 const entries = require("./entries");
 const merge = require("./_merge");
@@ -62,7 +61,7 @@ function load(
     return entry.list(entryOpts, dir) || [];
   })
     .then((files) => {
-      files = flatten(files);
+      files = files.flat();
       return pMap(files, async (file) => {
         try {
           return await parse(file);
