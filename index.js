@@ -67,16 +67,13 @@ function resolvePaths(value, base) {
 
 // ===================================================================
 
-function load(
-  appName,
-  {
-    appDir,
-    defaults,
-    entries: whitelist,
-    envPrefix,
-    ignoreUnknownFormats = false,
-  } = {},
-) {
+function load(appName, opts = {}) {
+  if (typeof appName === "object" && appName !== null) {
+    opts = appName;
+    ({ appName } = opts);
+  }
+  const { appDir, defaults, envPrefix, ignoreUnknownFormats = false } = opts;
+  let { entries: whitelist } = opts;
   const useWhitelist = whitelist !== undefined;
   if (useWhitelist) {
     whitelist = new Set(whitelist);

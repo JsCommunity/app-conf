@@ -20,7 +20,9 @@ precedence):
 ```javascript
 import { load as loadConfig } from "app-conf";
 
-const config = await loadConfig("my-application", {
+const config = await loadConfig({
+  appName: "my-application",
+
   // this is the directory where the vendor conf is stored
   //
   // vendor config will not be loaded if not defined
@@ -47,13 +49,17 @@ const config = await loadConfig("my-application", {
 console.log(config);
 ```
 
+> **Deprecated:** `loadConfig(appName, opts)` (two-argument form) still works
+> but is deprecated; pass `appName` inside the options object instead.
+
 <details>
 <summary>CommonJS</summary>
 
 ```javascript
 const { load: loadConfig } = require("app-conf");
 
-loadConfig("my-application", {
+loadConfig({
+  appName: "my-application",
   appDir: __dirname,
   defaults: {},
   entries: ["vendor", "system", "global", "local", "env"],
