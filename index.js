@@ -20,6 +20,31 @@ const unserialize = require("./serializers").unserialize;
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
+function deriveEnvPrefix(appName) {
+  return appName.toUpperCase().replace(/[^A-Z0-9]/g, "_") + "_";
+}
+
+function readEnvOverrides(prefix) {
+  const result = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (!key.startsWith(prefix)) continue;
+    const parts = key.slice(prefix.length).split("__");
+    if (parts.some((_) => _ === "")) continue;
+    let obj = result;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const part = parts[i];
+      if (obj[part] === null || typeof obj[part] !== "object") {
+        obj[part] = {};
+      }
+      obj = obj[part];
+    }
+    obj[parts[parts.length - 1]] = value.startsWith("json:")
+      ? JSON.parse(value.slice(5))
+      : value;
+  }
+  return result;
+}
+
 const RELATIVE_PATH_RE = /^\.{1,2}[/\\]/;
 function resolvePaths(value, base) {
   if (typeof value === "string") {
@@ -44,7 +69,13 @@ function resolvePaths(value, base) {
 
 function load(
   appName,
-  { appDir, defaults, entries: whitelist, ignoreUnknownFormats = false } = {},
+  {
+    appDir,
+    defaults,
+    entries: whitelist,
+    envPrefix,
+    ignoreUnknownFormats = false,
+  } = {},
 ) {
   const useWhitelist = whitelist !== undefined;
   if (useWhitelist) {
@@ -72,8 +103,8 @@ function load(
         }
       });
     })
-    .then((data) =>
-      data.reduce(
+    .then((data) => {
+      const config = data.reduce(
         (acc, cfg) => {
           if (cfg !== undefined) {
             merge(acc, cfg);
@@ -81,8 +112,16 @@ function load(
           return acc;
         },
         defaults === undefined ? {} : clone(defaults),
-      ),
-    );
+      );
+
+      if (envPrefix !== false && (!useWhitelist || whitelist.has("env"))) {
+        const prefix =
+          envPrefix !== undefined ? envPrefix : deriveEnvPrefix(appName);
+        merge(config, readEnvOverrides(prefix));
+      }
+
+      return config;
+    });
 }
 exports.load = load;
 
@@ -98,7 +137,7 @@ exports.parse = parse;
 
 // ===================================================================
 
-const ALL_ENTRIES = entries.map((_) => _.name);
+const ALL_ENTRIES = [...entries.map((_) => _.name), "env"];
 
 exports.watch = function watch(
   {

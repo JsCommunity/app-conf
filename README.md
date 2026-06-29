@@ -12,6 +12,7 @@ precedence):
 1. **user**: `~/.config/my-application/config.*`;
 1. **local**: `/.my-application.*` down to `./.my-application.*` in the current
    working directory;
+1. **env**: environment variables prefixed with the app name (see below);
 
 > Note: the **local** config is relative to the current working directory and
 > only makes sense for CLIs.
@@ -32,10 +33,18 @@ loadConfig("my-application", {
   defaults: {},
 
   // which types of config should be loaded
-  entries: ["vendor", "global", "user", "local"],
+  entries: ["vendor", "global", "user", "local", "env"],
 
   // whether to ignore unknown file formats instead of throwing
   ignoreUnknownFormats: false,
+
+  // prefix for environment variable overrides
+  //
+  // defaults to the app name uppercased with non-alphanumeric characters
+  // replaced by underscores, e.g. "my-application" → "MY_APPLICATION_"
+  //
+  // set to false to disable env var overrides entirely
+  //envPrefix: "MY_APPLICATION_",
 }).then(function (config) {
   console.log(config);
 });
@@ -56,6 +65,26 @@ packages to have additional features:
 - [js-yaml](https://www.npmjs.org/package/js-yaml): to support YAML files;
 - [json5](https://www.npmjs.com/package/json5): to support advanced JSON files;
 - [strip-json-comments](https://www.npmjs.org/package/strip-json-comments): to support comments in JSON files.
+
+### Environment variable overrides
+
+Environment variables are the highest-precedence source and always win over
+file-based config.
+
+The prefix is derived from the app name by default (`my-application` →
+`MY_APPLICATION_`). Use `__` to separate nested keys:
+
+```
+MY_APPLICATION_port=8080              → { port: "8080" }
+MY_APPLICATION_port=json:8080         → { port: 8080 }
+MY_APPLICATION_database__host=db      → { database: { host: "db" } }
+MY_APPLICATION_feature__enabled=json:true → { feature: { enabled: true } }
+MY_APPLICATION_tags=json:["a","b"]    → { tags: ["a", "b"] }
+```
+
+Values are strings by default. Prefix a value with `json:` to parse it as
+JSON — numbers, booleans, arrays, and objects are all supported. A malformed
+`json:` value throws rather than silently falling back to a string.
 
 ### `watch(opts, cb)`
 
@@ -115,13 +144,15 @@ A basic CLI is available to show the config:
 
 ```
 > ./node_modules/.bin/app-conf
-Usage: app-conf [--json | -j] [--watch | -w] [-p <path>]... <appName> [<appDir>]
+Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [-p <path>]... <appName> [<appDir>]
 
 app-conf v2.2.1
 > ./node_modules/.bin/app-conf my-app .
 ```
 
 The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or a subset of the configuration. Only top-level keys are supported when multiple `-p` flags are used.
+
+Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env` to disable env var overrides entirely.
 
 > Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your application directory and not from a global install.
 

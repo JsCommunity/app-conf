@@ -39,11 +39,12 @@ function print(paths, config) {
 async function main(args) {
   const cliOpts = {
     _: [],
+    envPrefix: undefined,
     help: false,
     paths: [],
     watch: false,
   };
-  for (let i = 0, n = args.length; i < n; ) {
+  for (let i = 0, n = args.length; i < n;) {
     const arg = args[i++];
     if (arg[0] === "-") {
       if (arg === "-h" || arg === "--help") {
@@ -52,6 +53,14 @@ async function main(args) {
         useJson = true;
       } else if (arg === "-w" || arg === "--watch") {
         cliOpts.watch = true;
+      } else if (arg === "--no-env") {
+        cliOpts.envPrefix = false;
+      } else if (arg === "--env-prefix") {
+        if (i < n) {
+          cliOpts.envPrefix = args[i++];
+        } else {
+          throw new Error("missing argument for --env-prefix option");
+        }
       } else if (arg === "-p" || arg === "--path") {
         if (i < n) {
           cliOpts.paths.push(args[i++]);
@@ -68,7 +77,7 @@ async function main(args) {
 
   if (cliOpts._.length === 0 || cliOpts.help) {
     const { name, version } = require("./package.json");
-    return stdout.write(`Usage: ${name} [--json | -j] [--watch | -w] [-p <path>]... <appName> [<appDir>]
+    return stdout.write(`Usage: ${name} [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [-p <path>]... <appName> [<appDir>]
 
 ${name} v${version}
 `);
@@ -79,6 +88,7 @@ ${name} v${version}
   const opts = {
     appDir,
     appName,
+    envPrefix: cliOpts.envPrefix,
     ignoreUnknownFormats: true,
     initialLoad: true,
   };
