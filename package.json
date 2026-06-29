@@ -23,21 +23,21 @@
   ],
   "bin": "./cli.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=20.19"
   },
   "dependencies": {
     "chokidar": "^4.0.3",
-    "debug": "^4.4.0",
-    "glob": "^10.4.5"
+    "debug": "^4.4.3",
+    "glob": "^13.0.6"
   },
   "devDependencies": {
-    "@eslint/js": "^9.19.0",
+    "@eslint/js": "^10.0.1",
     "eslint": "^10.6.0",
-    "globals": "^15.14.0",
+    "globals": "^17.7.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
+    "lint-staged": "^15.5.2",
     "mock-fs": "^5.5.0",
-    "prettier": "^3.4.2"
+    "prettier": "^3.9.3"
   },
   "scripts": {
     "test": "node --test",
