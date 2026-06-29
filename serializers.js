@@ -112,7 +112,7 @@ try {
 
   serializers.yaml = {
     test: function (file) {
-      return file.path && /\.yaml$/i.test(file.path);
+      return file.path && /\.ya?ml$/i.test(file.path);
     },
     unserialize: function (file) {
       return load(String(file.content));
