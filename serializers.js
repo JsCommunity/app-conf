@@ -95,5 +95,9 @@ exports.unserialize = function unserialize(file) {
   if (serializer === undefined) {
     throw new UnknownFormatError("no compatible format found for " + file.path);
   }
-  return serializer.parse(String(file.content));
+  try {
+    return serializer.parse(String(file.content));
+  } catch (cause) {
+    throw new Error("failed to parse " + file.path, { cause });
+  }
 };
