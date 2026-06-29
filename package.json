@@ -17,10 +17,12 @@
     "_readFile.js",
     "cli.js",
     "entries.js",
+    "index.d.ts",
     "index.js",
     "serializers.js",
     "unknown-format-error.js"
   ],
+  "types": "./index.d.ts",
   "bin": "./cli.js",
   "engines": {
     "node": ">=20.19"
