@@ -1,6 +1,6 @@
 # app-conf
 
-[![Package Version](https://badgen.net/npm/v/app-conf)](https://npmjs.org/package/app-conf) [![Build Status](https://travis-ci.org/julien-f/nodejs-app-conf.png?branch=master)](https://travis-ci.org/julien-f/nodejs-app-conf) [![PackagePhobia](https://badgen.net/packagephobia/install/app-conf)](https://packagephobia.now.sh/result?p=app-conf) [![Latest Commit](https://badgen.net/github/last-commit/julien-f/nodejs-app-conf)](https://github.com/julien-f/nodejs-app-conf/commits/master)
+[![Package Version](https://badgen.net/npm/v/app-conf)](https://npmjs.org/package/app-conf) [![Build Status](https://github.com/JsCommunity/app-conf/actions/workflows/ci.yml/badge.svg)](https://github.com/JsCommunity/app-conf/actions) [![PackagePhobia](https://badgen.net/packagephobia/install/app-conf)](https://packagephobia.com/result?p=app-conf) [![Latest Commit](https://badgen.net/github/last-commit/JsCommunity/app-conf)](https://github.com/JsCommunity/app-conf/commits/master)
 
 ## Usage
 
@@ -18,16 +18,13 @@ precedence):
 > only makes sense for CLIs.
 
 ```javascript
-var loadConfig = require("app-conf").load;
+import { load as loadConfig } from "app-conf";
 
-loadConfig("my-application", {
+const config = await loadConfig("my-application", {
   // this is the directory where the vendor conf is stored
   //
   // vendor config will not be loaded if not defined
-  appDir: __dirname,
-
-  // equivalent of `__dirname` for ECMAScript Modules:
-  //appDir: new URL('.', import.meta.url).pathname,
+  appDir: new URL(".", import.meta.url).pathname,
 
   // default config values
   defaults: {},
@@ -45,10 +42,28 @@ loadConfig("my-application", {
   //
   // set to false to disable env var overrides entirely
   //envPrefix: "MY_APPLICATION_",
-}).then(function (config) {
+});
+
+console.log(config);
+```
+
+<details>
+<summary>CommonJS</summary>
+
+```javascript
+const { load: loadConfig } = require("app-conf");
+
+loadConfig("my-application", {
+  appDir: __dirname,
+  defaults: {},
+  entries: ["vendor", "global", "user", "local", "env"],
+  ignoreUnknownFormats: false,
+}).then((config) => {
   console.log(config);
 });
 ```
+
+</details>
 
 Relative paths, string values starting by `./` or `../`, are automatically
 resolved from the config file directory.
@@ -146,7 +161,6 @@ A basic CLI is available to show the config:
 > ./node_modules/.bin/app-conf
 Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [-p <path>]... <appName> [<appDir>]
 
-app-conf v2.2.1
 > ./node_modules/.bin/app-conf my-app .
 ```
 
@@ -163,7 +177,7 @@ the code.
 
 You may:
 
-- report any [issue](https://github.com/julien-f/nodejs-app-conf/issues)
+- report any [issue](https://github.com/JsCommunity/app-conf/issues)
   you've encountered;
 - fork and create a pull request.
 

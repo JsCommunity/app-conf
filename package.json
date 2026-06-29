@@ -5,11 +5,11 @@
   "author": "Julien Fontanet <julien.fontanet@isonoe.net> (http://julien.isonoe.net/)",
   "description": "",
   "keywords": [],
-  "homepage": "https://github.com/julien-f/nodejs-app-conf",
-  "bugs": "https://github.com/julien-f/nodejs-app-conf/issues/",
+  "homepage": "https://github.com/JsCommunity/app-conf",
+  "bugs": "https://github.com/JsCommunity/app-conf/issues/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/julien-f/nodejs-app-conf"
+    "url": "https://github.com/JsCommunity/app-conf"
   },
   "files": [
     "_pMap.js",
