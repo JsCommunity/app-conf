@@ -3,8 +3,8 @@
 const { describe, it } = require("node:test");
 const assert = require("assert");
 
-const UnknownFormatError = require("./unknown-format-error");
-const { unserialize } = require("./serializers");
+const UnknownFormatError = require("./_unknown-format-error");
+const { unserialize } = require("./_serializers");
 
 // ===================================================================
 

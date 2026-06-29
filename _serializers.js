@@ -2,7 +2,7 @@
 
 // ===================================================================
 
-const UnknownFormatError = require("./unknown-format-error");
+const UnknownFormatError = require("./_unknown-format-error");
 
 // ===================================================================
 

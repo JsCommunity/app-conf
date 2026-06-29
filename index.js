@@ -9,12 +9,12 @@ const resolvePath = require("path").resolve;
 
 const debug = require("debug")("app-conf");
 
-const entries = require("./entries");
+const entries = require("./_entries");
 const merge = require("./_merge");
 const pMap = require("./_pMap");
 const readFile = require("./_readFile");
-const UnknownFormatError = require("./unknown-format-error");
-const unserialize = require("./serializers").unserialize;
+const UnknownFormatError = require("./_unknown-format-error");
+const unserialize = require("./_serializers").unserialize;
 
 // ===================================================================
 
@@ -127,6 +127,7 @@ function load(appName, opts = {}) {
     });
 }
 exports.load = load;
+exports.UnknownFormatError = UnknownFormatError;
 
 // ===================================================================
 
