@@ -101,6 +101,14 @@ Values are strings by default. Prefix a value with `json:` to parse it as
 JSON — numbers, booleans, arrays, and objects are all supported. A malformed
 `json:` value throws rather than silently falling back to a string.
 
+Key segments are used **as-is** — their case is not transformed. Use the exact
+casing your config schema expects:
+
+```
+MY_APPLICATION_port=8080         → { port: "8080" }    ✓ lowercase key
+MY_APPLICATION_Port=8080         → { Port: "8080" }    different key
+```
+
 ### `watch(opts, cb)`
 
 This method reload the configuration every time it might have changed.
