@@ -9,7 +9,7 @@ precedence):
 
 1. **vendor**: `config.*` in the application directory;
 1. **system**: `/etc/my-application/config.*`;
-1. **global**: `~/.config/my-application/config.*`;
+1. **global**: `~/.config/my-application/config.*` (or `$XDG_CONFIG_HOME/my-application/config.*` if set; on Windows: `%APPDATA%\my-application\config.*`);
 1. **local**: `/.my-application.*` down to `./.my-application.*` in the current
    working directory;
 1. **env**: environment variables prefixed with the app name (see below);

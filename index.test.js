@@ -5,6 +5,7 @@ const mock = require("mock-fs");
 
 const { afterEach, beforeEach, describe, it } = require("node:test");
 const assert = require("assert");
+const { join } = require("path");
 const homedir = require("os").homedir;
 
 const loadConfig = require(".").load;
@@ -156,6 +157,61 @@ describe("appConf", function () {
         }).then(function (config) {
           assert.strictEqual(config.foo, "local.0");
         });
+      });
+    });
+
+    describe("global config", function () {
+      let savedXdg, savedAppdata;
+      beforeEach(function () {
+        savedXdg = process.env.XDG_CONFIG_HOME;
+        savedAppdata = process.env.APPDATA;
+      });
+      afterEach(function () {
+        mock.restore();
+        if (savedXdg === undefined) delete process.env.XDG_CONFIG_HOME;
+        else process.env.XDG_CONFIG_HOME = savedXdg;
+        if (savedAppdata === undefined) delete process.env.APPDATA;
+        else process.env.APPDATA = savedAppdata;
+      });
+
+      it("reads from XDG_CONFIG_HOME when set", function () {
+        process.env.XDG_CONFIG_HOME = "/custom-xdg";
+        delete process.env.APPDATA;
+        mock({ "/custom-xdg/test-app-conf/config.json": '{ "global": true }' });
+        return loadConfig("test-app-conf", { entries: ["global"] }).then(
+          function (config) {
+            assert.deepStrictEqual(config, { global: true });
+          },
+        );
+      });
+
+      it("falls back to ~/.config when XDG_CONFIG_HOME is not set", function () {
+        delete process.env.XDG_CONFIG_HOME;
+        delete process.env.APPDATA;
+        mock({
+          [join(homedir(), ".config", "test-app-conf", "config.json")]:
+            '{ "global": true }',
+        });
+        return loadConfig("test-app-conf", { entries: ["global"] }).then(
+          function (config) {
+            assert.deepStrictEqual(config, { global: true });
+          },
+        );
+      });
+
+      it("XDG_CONFIG_HOME takes precedence over ~/.config", function () {
+        process.env.XDG_CONFIG_HOME = "/custom-xdg";
+        delete process.env.APPDATA;
+        mock({
+          "/custom-xdg/test-app-conf/config.json": '{ "source": "xdg" }',
+          [join(homedir(), ".config", "test-app-conf", "config.json")]:
+            '{ "source": "home" }',
+        });
+        return loadConfig("test-app-conf", { entries: ["global"] }).then(
+          function (config) {
+            assert.strictEqual(config.source, "xdg");
+          },
+        );
       });
     });
   });

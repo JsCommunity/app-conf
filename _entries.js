@@ -42,7 +42,10 @@ module.exports = [
   {
     name: "global",
     dir: (opts) => {
-      const configDir = process.env.XDG_CONFIG_HOME || j(homedir(), ".config");
+      const configDir =
+        process.platform === "win32"
+          ? process.env.APPDATA
+          : process.env.XDG_CONFIG_HOME || j(homedir(), ".config");
       return configDir && j(configDir, opts.appName);
     },
     list: (_, dir) => dir && fg(j(dir, "config.*")),
