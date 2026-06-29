@@ -36,17 +36,6 @@ const serializers = [
 
 // Optional dependency.
 try {
-  const CSON = require("cson-parse");
-  serializers.push({
-    test: (path) => /\.cson$/i.test(path),
-    parse: (content) => CSON.parse(content),
-  });
-} catch (_) {
-  /* empty */
-}
-
-// Optional dependency.
-try {
   const ini = require("ini");
   serializers.push({
     test: (path) => /\.ini$/i.test(path),

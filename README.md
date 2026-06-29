@@ -81,7 +81,6 @@ JSON format is supported natively but you may install the following
 packages to have additional features:
 
 - [smol-toml](https://www.npmjs.com/package/smol-toml): to support [TOML files](https://github.com/toml-lang/toml);
-- [cson-parse](https://www.npmjs.com/package/cson-parser): to support CSON files;
 - [ini](https://www.npmjs.org/package/ini): to support INI files;
 - [js-yaml](https://www.npmjs.org/package/js-yaml): to support YAML files;
 - [json5](https://www.npmjs.com/package/json5): to support advanced JSON files;
