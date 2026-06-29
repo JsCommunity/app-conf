@@ -2,7 +2,10 @@
 
 // ===================================================================
 
-const formatJson = JSON.stringify;
+const UnknownFormatError = require("./unknown-format-error");
+
+// ===================================================================
+
 const parseJson = (function () {
   try {
     return require("json5").parse;
@@ -22,47 +25,22 @@ const parseJson = (function () {
   return JSON.parse;
 })();
 
-const UnknownFormatError = require("./unknown-format-error");
-
 // ===================================================================
 
-const serializers = Object.create(null);
-
-serializers.json = {
-  // Test whether this “file” seems to be on the correct format.
-  test: function (file) {
-    return file.path && /\.json5?$/i.test(file.path);
+const serializers = [
+  {
+    test: (path) => /\.json5?$/i.test(path),
+    parse: (content) => parseJson(content),
   },
-
-  // Unserialize the content of the file.
-  unserialize: function (file) {
-    return parseJson(String(file.content));
-  },
-
-  // Serialize the value to a string/buffer.
-  serialize: function (value, opts) {
-    opts || (opts = {});
-    const indent = "indent" in opts ? opts.indent : 2;
-
-    return formatJson(value, null, indent);
-  },
-};
+];
 
 // Optional dependency.
 try {
   const CSON = require("cson-parse");
-
-  serializers.cson = {
-    test: function (file) {
-      return file.path && /\.cson$/i.test(file.path);
-    },
-    unserialize: function (file) {
-      return CSON.parse(String(file.content));
-    },
-    serialize: function (value) {
-      return CSON.stringify(value);
-    },
-  };
+  serializers.push({
+    test: (path) => /\.cson$/i.test(path),
+    parse: (content) => CSON.parse(content),
+  });
 } catch (_) {
   /* empty */
 }
@@ -70,30 +48,21 @@ try {
 // Optional dependency.
 try {
   const ini = require("ini");
-
-  serializers.ini = {
-    test: function (file) {
-      return file.path && /\.ini$/i.test(file.path);
-    },
-    unserialize: function (file) {
-      return ini.decode(String(file.content));
-    },
-    serialize: function (value) {
-      return ini.encode(value);
-    },
-  };
+  serializers.push({
+    test: (path) => /\.ini$/i.test(path),
+    parse: (content) => ini.decode(content),
+  });
 } catch (_) {
   /* empty */
 }
 
+// Optional dependency.
 try {
-  const { parse, stringify } = require("@iarna/toml");
-
-  serializers.toml = {
-    serialize: stringify,
-    test: ({ path }) => path !== undefined && /\.toml$/i.test(path),
-    unserialize: ({ content }) => parse(String(content)),
-  };
+  const { parse } = require("@iarna/toml");
+  serializers.push({
+    test: (path) => /\.toml$/i.test(path),
+    parse: (content) => parse(content),
+  });
 } catch (_) {
   /* empty */
 }
@@ -102,63 +71,29 @@ try {
 try {
   const yaml = require("js-yaml");
 
-  let { dump, load } = yaml;
+  let load = yaml.load;
 
   // compat with js-yaml < 4
   if ("DEFAULT_SAFE_SCHEMA" in yaml) {
-    dump = yaml.safeDump;
     load = yaml.safeLoad;
   }
 
-  serializers.yaml = {
-    test: function (file) {
-      return file.path && /\.ya?ml$/i.test(file.path);
-    },
-    unserialize: function (file) {
-      return load(String(file.content));
-    },
-    serialize: function (value, opts) {
-      opts || (opts = {});
-      const indent = "indent" in opts ? opts.indent : 2;
-
-      return dump(value, {
-        indent,
-      });
-    },
-  };
+  serializers.push({
+    test: (path) => /\.ya?ml$/i.test(path),
+    parse: (content) => load(content),
+  });
 } catch (_) {
   /* empty */
 }
 
-// --------------------------------------------------------------------
-
-const detectFormat = function (file) {
-  const entry = Object.entries(serializers).find(([, s]) => s.test(file));
-  return entry && entry[0];
-};
-
-const serialize = function (value, format, opts) {
-  let buffer = serializers[format].serialize(value, opts);
-
-  if (!(buffer instanceof Buffer)) {
-    buffer = Buffer.from(buffer);
-  }
-
-  return buffer;
-};
-
-const unserialize = function (file, format) {
-  format || (format = detectFormat(file));
-
-  if (!format) {
-    throw new UnknownFormatError("no compatible format found for " + file.path);
-  }
-
-  return serializers[format].unserialize(file);
-};
-
 // ===================================================================
 
-exports.detectFormat = detectFormat;
-exports.serialize = serialize;
-exports.unserialize = unserialize;
+exports.serializers = serializers;
+
+exports.unserialize = function unserialize(file) {
+  const serializer = serializers.find((s) => s.test(file.path));
+  if (serializer === undefined) {
+    throw new UnknownFormatError("no compatible format found for " + file.path);
+  }
+  return serializer.parse(String(file.content));
+};
