@@ -5,7 +5,7 @@
 const j = require("path").join;
 const resolvePath = require("path").resolve;
 
-const { glob } = require("glob");
+const fg = require("fast-glob");
 const { homedir } = require("os");
 
 const pMap = require("./_pMap");
@@ -28,14 +28,14 @@ module.exports = [
   {
     name: "vendor",
     dir: (opts) => opts.appDir,
-    list: (_, dir) => dir && glob(j(dir, "config.*")),
+    list: (_, dir) => dir && fg(j(dir, "config.*")),
   },
 
   // Configuration for the whole system.
   {
     name: "system",
     dir: (opts) => j("/etc", opts.appName),
-    list: (_, dir) => glob(j(dir, "config.*")),
+    list: (_, dir) => fg(j(dir, "config.*")),
   },
 
   // Configuration for the current user.
@@ -45,7 +45,7 @@ module.exports = [
       const configDir = process.env.XDG_CONFIG_HOME || j(homedir(), ".config");
       return configDir && j(configDir, opts.appName);
     },
-    list: (_, dir) => dir && glob(j(dir, "config.*")),
+    list: (_, dir) => dir && fg(j(dir, "config.*")),
   },
 
   // Configuration of the current project (local to the file
@@ -67,9 +67,7 @@ module.exports = [
       }
 
       return pMap(paths.reverse(), (path) =>
-        glob(path, {
-          silent: true,
-        }).catch(ignoreAccessErrors),
+        fg(path).catch(ignoreAccessErrors),
       ).then((results) => results.flat());
     },
   },

@@ -36,7 +36,7 @@
   "dependencies": {
     "chokidar": "^4.0.3",
     "debug": "^4.4.3",
-    "glob": "^13.0.6"
+    "fast-glob": "^3.3.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
