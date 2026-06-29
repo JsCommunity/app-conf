@@ -18,8 +18,6 @@ const unserialize = require("./_serializers").unserialize;
 
 // ===================================================================
 
-const clone = (value) => JSON.parse(JSON.stringify(value));
-
 function deriveEnvPrefix(appName) {
   return appName.toUpperCase().replace(/[^A-Z0-9]/g, "_") + "_";
 }
@@ -114,7 +112,7 @@ function load(appName, opts = {}) {
           }
           return acc;
         },
-        defaults === undefined ? {} : clone(defaults),
+        defaults === undefined ? {} : structuredClone(defaults),
       );
 
       if (envPrefix !== false && (!useWhitelist || whitelist.has("env"))) {
@@ -203,7 +201,9 @@ exports.watch = function watch(
           const vendor = await load(appName, opts);
 
           opts.defaults =
-            defaults === undefined ? vendor : merge(clone(defaults), vendor);
+            defaults === undefined
+              ? vendor
+              : merge(structuredClone(defaults), vendor);
           opts.entries = whitelist.filter((_) => _ !== "vendor");
         }
 
