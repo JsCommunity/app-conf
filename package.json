@@ -34,15 +34,15 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "eslint": "^10.6.0",
     "globals": "^15.14.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
-    "mock-fs": "^5.4.1",
-    "prettier": "^3.4.2",
-    "test": "^3.3.0"
+    "mock-fs": "^5.5.0",
+    "prettier": "^3.4.2"
   },
   "scripts": {
-    "test": "node--test && true",
+    "test": "node --test",
     "prepare": "husky"
   },
   "lint-staged": {

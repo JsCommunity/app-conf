@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("assert").strict;
-const test = require("test");
+const test = require("node:test");
 
 const merge = require("./_merge.js");
 

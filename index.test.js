@@ -3,7 +3,7 @@
 // This should be require first, otherwise fs-promise does not use it.
 const mock = require("mock-fs");
 
-const { afterEach, beforeEach, describe, it } = require("test");
+const { afterEach, beforeEach, describe, it } = require("node:test");
 const assert = require("assert");
 const homedir = require("os").homedir;
 
