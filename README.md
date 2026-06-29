@@ -8,8 +8,8 @@ The following files are looked up and merged (the latest take
 precedence):
 
 1. **vendor**: `config.*` in the application directory;
-1. **global**: `/etc/my-application/config.*`;
-1. **user**: `~/.config/my-application/config.*`;
+1. **system**: `/etc/my-application/config.*`;
+1. **global**: `~/.config/my-application/config.*`;
 1. **local**: `/.my-application.*` down to `./.my-application.*` in the current
    working directory;
 1. **env**: environment variables prefixed with the app name (see below);
@@ -30,7 +30,7 @@ const config = await loadConfig("my-application", {
   defaults: {},
 
   // which types of config should be loaded
-  entries: ["vendor", "global", "user", "local", "env"],
+  entries: ["vendor", "system", "global", "local", "env"],
 
   // whether to ignore unknown file formats instead of throwing
   ignoreUnknownFormats: false,
@@ -56,7 +56,7 @@ const { load: loadConfig } = require("app-conf");
 loadConfig("my-application", {
   appDir: __dirname,
   defaults: {},
-  entries: ["vendor", "global", "user", "local", "env"],
+  entries: ["vendor", "system", "global", "local", "env"],
   ignoreUnknownFormats: false,
 }).then((config) => {
   console.log(config);
