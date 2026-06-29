@@ -58,7 +58,7 @@ try {
 
 // Optional dependency.
 try {
-  const { parse } = require("@iarna/toml");
+  const { parse } = require("smol-toml");
   serializers.push({
     test: (path) => /\.toml$/i.test(path),
     parse: (content) => parse(content),
