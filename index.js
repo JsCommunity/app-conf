@@ -191,6 +191,7 @@ exports.watch = function watch(
       .once("error", reject)
       .once("ready", async () => {
         function unsubscribe() {
+          clearTimeout(debounceTimer);
           return watcher.close();
         }
 
