@@ -174,8 +174,12 @@ exports.watch = function watch(
       ignorePermissionErrors: true,
     });
 
+    let debounceTimer;
     const loadWrapper = () => {
-      load(appName, opts).then((config) => cb(undefined, config), cb);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        load(appName, opts).then((config) => cb(undefined, config), cb);
+      }, 100);
     };
 
     watcher
