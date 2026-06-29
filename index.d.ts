@@ -1,3 +1,8 @@
+export interface Serializer {
+  test(path: string): boolean;
+  parse(content: string): unknown;
+}
+
 export interface Options {
   /** Directory where vendor config (`config.*`) is looked up. Required for the vendor entry to be loaded. */
   appDir?: string;
@@ -9,6 +14,8 @@ export interface Options {
   envPrefix?: string | false;
   /** Silently skip files with unrecognized formats instead of throwing. */
   ignoreUnknownFormats?: boolean;
+  /** Custom serializers, checked before built-ins. First match wins. */
+  serializers?: Serializer[];
 }
 
 export interface LoadOptions extends Options {
@@ -48,6 +55,9 @@ export function watch(
 /**
  * Parse a single config file, resolving relative and home-relative paths.
  */
-export function parse(path: string): Promise<Record<string, unknown>>;
+export function parse(
+  path: string,
+  opts?: Pick<Options, "serializers">,
+): Promise<Record<string, unknown>>;
 
 export class UnknownFormatError extends Error {}

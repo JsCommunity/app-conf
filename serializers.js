@@ -79,8 +79,12 @@ try {
 
 exports.serializers = serializers;
 
-exports.unserialize = function unserialize(file) {
-  const serializer = serializers.find((s) => s.test(file.path));
+exports.unserialize = function unserialize(file, customSerializers) {
+  const all =
+    customSerializers !== undefined && customSerializers.length !== 0
+      ? [...customSerializers, ...serializers]
+      : serializers;
+  const serializer = all.find((s) => s.test(file.path));
   if (serializer === undefined) {
     throw new UnknownFormatError("no compatible format found for " + file.path);
   }

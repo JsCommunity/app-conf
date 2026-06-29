@@ -72,7 +72,13 @@ function load(appName, opts = {}) {
     opts = appName;
     ({ appName } = opts);
   }
-  const { appDir, defaults, envPrefix, ignoreUnknownFormats = false } = opts;
+  const {
+    appDir,
+    defaults,
+    envPrefix,
+    ignoreUnknownFormats = false,
+    serializers: customSerializers,
+  } = opts;
   let { entries: whitelist } = opts;
   const useWhitelist = whitelist !== undefined;
   if (useWhitelist) {
@@ -92,7 +98,7 @@ function load(appName, opts = {}) {
       files = files.flat();
       return pMap(files, async (file) => {
         try {
-          return await parse(file);
+          return await parse(file, { serializers: customSerializers });
         } catch (error) {
           if (!(ignoreUnknownFormats && error instanceof UnknownFormatError)) {
             throw error;
@@ -124,9 +130,9 @@ exports.load = load;
 
 // ===================================================================
 
-async function parse(path) {
+async function parse(path, { serializers: customSerializers } = {}) {
   const file = await readFile(path);
-  const data = unserialize(file);
+  const data = unserialize(file, customSerializers);
   debug(file.path);
   return resolvePaths(data, dirname(file.path));
 }

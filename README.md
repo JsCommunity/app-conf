@@ -86,6 +86,29 @@ packages to have additional features:
 - [json5](https://www.npmjs.com/package/json5): to support advanced JSON files;
 - [strip-json-comments](https://www.npmjs.org/package/strip-json-comments): to support comments in JSON files.
 
+### Custom serializers
+
+For formats not supported out of the box, pass a `serializers` array. Each
+entry needs a `test(path)` function and a `parse(content)` function. Custom
+serializers are checked before built-ins, so they can also override an
+existing format.
+
+```javascript
+import { load } from "app-conf";
+import { parse as parseCson } from "cson-parse";
+
+const config = await load("my-application", {
+  serializers: [
+    {
+      test: (path) => /\.cson$/i.test(path),
+      parse: (content) => parseCson(content),
+    },
+  ],
+});
+```
+
+The `serializers` option is also accepted by `watch()` and `parse()`.
+
 ### Environment variable overrides
 
 Environment variables are the highest-precedence source and always win over
