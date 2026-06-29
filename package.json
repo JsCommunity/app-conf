@@ -4,7 +4,13 @@
   "license": "ISC",
   "author": "Julien Fontanet <julien.fontanet@isonoe.net> (http://julien.isonoe.net/)",
   "description": "Load and merge configuration from vendor, system, user, and local sources with optional env var overrides",
-  "keywords": [],
+  "keywords": [
+    "config",
+    "configuration",
+    "settings",
+    "conf",
+    "env"
+  ],
   "homepage": "https://github.com/JsCommunity/app-conf",
   "bugs": "https://github.com/JsCommunity/app-conf/issues/",
   "repository": {
