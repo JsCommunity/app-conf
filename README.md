@@ -206,6 +206,34 @@ Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env
 
 > Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your application directory and not from a global install.
 
+## Design
+
+`app-conf` is built around a few deliberate principles.
+
+**Each source has a distinct audience.** Sources are loaded in order and merged so that later layers override earlier ones:
+
+- _vendor_: the application's own bundled defaults
+- _system_ (`/etc/<app>`): machine-wide settings, set by a sysadmin or service deployment
+- _global_ (`~/.config/<app>`): per-user settings, or user-level service config
+- _local_ (`./<app>.*`): directory-sensitive config for tools like CLIs
+- _env_: runtime overrides — secrets, environment-specific values, feature flags
+
+**Default values belong in vendor config, not in code.** Hardcoding defaults directly in application code hides them from operators and makes them impossible to override without patching the source. Putting defaults in a `config.*` file shipped alongside the application keeps them visible, self-documenting, and overridable by any higher-priority layer.
+
+**Objects are merged deeply; scalars replace.** When two layers both define a nested object (e.g. `database: { host, port }`), their keys are merged rather than one object clobbering the other. A layer only needs to specify the keys it cares about. Scalar values (strings, numbers, booleans, arrays) replace unconditionally — there is no array-append semantic, which keeps the mental model simple and predictable.
+
+**Environment variables always win.** Following [12-factor app](https://12factor.net/config) practice, env vars are applied last and cannot be overridden by any file. This makes containerised deployments and CI pipelines predictable: injecting `MY_APP_port=8080` into the environment is enough, regardless of what any config file says.
+
+**Local config walks up the directory tree, root-first.** The local layer looks for `.<appName>.*` from the filesystem root down to the current working directory, loading each file it finds. A config file higher up acts as a wider default, one closer to cwd wins — the same intuition as `.gitignore` or `.editorconfig`.
+
+**Vendor config is immutable at runtime.** The vendor layer (the app's own bundled defaults) is never watched for changes. Reloading it on a file-system event during an upgrade or reinstall could leave a running process in an inconsistent state. When using `watch()`, vendor config is loaded once and folded into defaults before watching begins.
+
+**Path resolution is relative to the config file, not the process.** String values starting with `./`, `../`, or `~/` are resolved from the directory containing the config file that defined them. This means a config file can reference sibling files without knowing where the process was launched from — avoiding a common footgun.
+
+**Config changes should not require a restart.** The `watch()` API monitors all non-vendor config directories and reloads automatically when any file changes. This lets long-running processes — servers, daemons, background services — pick up updated config without interruption.
+
+**Format is the application's choice, not the library's.** JSON is supported natively; TOML, YAML, INI, and JSON5 are available by installing the corresponding peer dependency. This lets each application pick the format that suits its operators without imposing a dependency on everyone else. Custom serializers can be passed directly for formats not covered by the built-ins.
+
 ## Contributing
 
 Contributions are _very_ welcome, either on the documentation or on
