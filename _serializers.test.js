@@ -17,6 +17,13 @@ describe("serializers", function () {
       );
     });
 
+    it("supports comments in JSON", function () {
+      assert.deepStrictEqual(
+        unserialize({ path: "/config.json", content: '{ "a": 1 /* c */ }' }),
+        { a: 1 },
+      );
+    });
+
     it("wraps parse errors with the file path", function () {
       assert.throws(
         () => unserialize({ path: "/config.json", content: "{ invalid" }),

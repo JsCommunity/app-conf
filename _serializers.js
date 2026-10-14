@@ -14,7 +14,9 @@ const parseJson = (function () {
   }
 
   try {
-    const stripJsonComments = require("strip-json-comments");
+    const m = require("strip-json-comments");
+    // v4+ is ESM-only: require() returns the module namespace
+    const stripJsonComments = m.default ?? m;
     return function parseJson(json) {
       return JSON.parse(stripJsonComments(json));
     };
