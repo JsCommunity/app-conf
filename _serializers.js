@@ -60,15 +60,7 @@ try {
 
 // Optional dependency.
 try {
-  const yaml = require("js-yaml");
-
-  let load = yaml.load;
-
-  // compat with js-yaml < 4
-  if ("DEFAULT_SAFE_SCHEMA" in yaml) {
-    load = yaml.safeLoad;
-  }
-
+  const { load } = require("js-yaml");
   serializers.push({
     test: (path) => /\.ya?ml$/i.test(path),
     parse: (content) => load(content),
