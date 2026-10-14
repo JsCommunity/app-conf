@@ -14,7 +14,9 @@ const parseJson = (function () {
   }
 
   try {
-    const stripJsonComments = require("strip-json-comments");
+    const m = require("strip-json-comments");
+    // v4+ is ESM-only: require() returns the module namespace
+    const stripJsonComments = m.default ?? m;
     return function parseJson(json) {
       return JSON.parse(stripJsonComments(json));
     };
@@ -58,15 +60,7 @@ try {
 
 // Optional dependency.
 try {
-  const yaml = require("js-yaml");
-
-  let load = yaml.load;
-
-  // compat with js-yaml < 4
-  if ("DEFAULT_SAFE_SCHEMA" in yaml) {
-    load = yaml.safeLoad;
-  }
-
+  const { load } = require("js-yaml");
   serializers.push({
     test: (path) => /\.ya?ml$/i.test(path),
     parse: (content) => load(content),

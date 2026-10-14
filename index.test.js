@@ -199,6 +199,34 @@ describe("appConf", function () {
         );
       });
 
+      it("handles glob special characters in the directory", function () {
+        process.env.XDG_CONFIG_HOME = "/xdg (copy) [1] {a,b}";
+        delete process.env.APPDATA;
+        mock({
+          "/xdg (copy) [1] {a,b}/test-app-conf/config.json":
+            '{ "global": true }',
+        });
+        return loadConfig("test-app-conf", { entries: ["global"] }).then(
+          function (config) {
+            assert.deepStrictEqual(config, { global: true });
+          },
+        );
+      });
+
+      it("ignores directories matching the config name", function () {
+        process.env.XDG_CONFIG_HOME = "/custom-xdg";
+        delete process.env.APPDATA;
+        mock({
+          "/custom-xdg/test-app-conf/config.d": {},
+          "/custom-xdg/test-app-conf/config.json": '{ "global": true }',
+        });
+        return loadConfig("test-app-conf", { entries: ["global"] }).then(
+          function (config) {
+            assert.deepStrictEqual(config, { global: true });
+          },
+        );
+      });
+
       it("XDG_CONFIG_HOME takes precedence over ~/.config", function () {
         process.env.XDG_CONFIG_HOME = "/custom-xdg";
         delete process.env.APPDATA;

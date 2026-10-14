@@ -82,7 +82,7 @@ packages to have additional features:
 
 - [smol-toml](https://www.npmjs.com/package/smol-toml): to support [TOML files](https://github.com/toml-lang/toml);
 - [ini](https://www.npmjs.org/package/ini): to support INI files;
-- [js-yaml](https://www.npmjs.org/package/js-yaml): to support YAML files;
+- [js-yaml](https://www.npmjs.org/package/js-yaml) (≥ 4): to support YAML files;
 - [json5](https://www.npmjs.com/package/json5): to support advanced JSON files;
 - [strip-json-comments](https://www.npmjs.org/package/strip-json-comments): to support comments in JSON files.
 
