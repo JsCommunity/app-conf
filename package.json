@@ -34,7 +34,7 @@
     "node": ">=20.19"
   },
   "dependencies": {
-    "chokidar": "^4.0.3",
+    "chokidar": "^5.0.0",
     "debug": "^4.4.3"
   },
   "devDependencies": {
