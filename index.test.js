@@ -8,7 +8,7 @@ const assert = require("assert");
 const { join } = require("path");
 const homedir = require("os").homedir;
 
-const loadConfig = require(".").load;
+const { load: loadConfig, UnknownFormatError } = require(".");
 
 // ===================================================================
 
@@ -75,6 +75,73 @@ describe("appConf", function () {
 
           // merging order is still the same though
           foo: "local.0",
+        });
+      });
+    });
+
+    it("accepts options as the first argument", function () {
+      return loadConfig({
+        appName: "test-app-conf",
+        entries: ["system"],
+      }).then(function (config) {
+        assert.deepStrictEqual(config, { system: true, foo: "system" });
+      });
+    });
+
+    it("merges defaults below all entries without mutating them", function () {
+      const defaults = { foo: "default", nested: { a: 1 } };
+      return loadConfig("test-app-conf", {
+        defaults,
+        entries: ["system"],
+      }).then(function (config) {
+        assert.deepStrictEqual(config, {
+          foo: "system",
+          nested: { a: 1 },
+          system: true,
+        });
+        assert.notStrictEqual(config.nested, defaults.nested);
+        assert.deepStrictEqual(defaults, {
+          foo: "default",
+          nested: { a: 1 },
+        });
+      });
+    });
+
+    describe("unknown formats", function () {
+      beforeEach(function () {
+        mock({
+          "/etc/test-app-conf/config.json": '{ "foo": "json" }',
+          "/etc/test-app-conf/config.xyz": "foo=xyz",
+        });
+      });
+
+      it("rejects with UnknownFormatError by default", function () {
+        return assert.rejects(
+          loadConfig("test-app-conf", { entries: ["system"] }),
+          UnknownFormatError,
+        );
+      });
+
+      it("ignores them with ignoreUnknownFormats", function () {
+        return loadConfig("test-app-conf", {
+          entries: ["system"],
+          ignoreUnknownFormats: true,
+        }).then(function (config) {
+          assert.deepStrictEqual(config, { foo: "json" });
+        });
+      });
+
+      it("parses them with custom serializers", function () {
+        return loadConfig("test-app-conf", {
+          entries: ["system"],
+          serializers: [
+            {
+              test: (path) => path.endsWith(".xyz"),
+              parse: (content) => Object.fromEntries([content.split("=")]),
+            },
+          ],
+        }).then(function (config) {
+          assert.deepStrictEqual(config, { foo: "xyz" });
         });
       });
     });
