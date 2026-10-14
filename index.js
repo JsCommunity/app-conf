@@ -195,17 +195,10 @@ exports.watch = function watch(
 
         // vendor config is only read once and merged to defaults to avoid issues
         // in case it has been deleted and another entry triggers a reload
-        if (whitelist.includes("vendor")) {
-          opts.entries = ["vendor"];
-
-          const vendor = await load(appName, opts);
-
-          opts.defaults =
-            defaults === undefined
-              ? vendor
-              : merge(structuredClone(defaults), vendor);
-          opts.entries = whitelist.filter((_) => _ !== "vendor");
-        }
+        opts.defaults = whitelist.includes("vendor")
+          ? await load(appName, { ...opts, defaults, entries: ["vendor"] })
+          : defaults;
+        opts.entries = whitelist.filter((_) => _ !== "vendor");
 
         if (initialLoad) {
           try {
