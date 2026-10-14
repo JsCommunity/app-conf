@@ -48,3 +48,8 @@ Object.entries({
     assert.deepEqual(merge(target, source), expected);
   });
 });
+
+test("__proto__ in source does not pollute Object.prototype", function () {
+  merge({}, JSON.parse('{ "__proto__": { "polluted": true } }'));
+  assert.equal({}.polluted, undefined);
+});

@@ -15,7 +15,10 @@ module.exports = function merge(target, source) {
   }
 
   for (const key of Object.keys(source)) {
-    target[key] = merge(target[key], source[key]);
+    // JSON.parse creates an own __proto__ key, merging it would pollute Object.prototype
+    if (key !== "__proto__") {
+      target[key] = merge(target[key], source[key]);
+    }
   }
   return target;
 };
