@@ -1,16 +1,20 @@
 "use strict";
 
+// only arrays and plain objects are merged, others (Date, class instances…) are replaced
+function isMergeable(value) {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return Array.isArray(value) || proto === Object.prototype || proto === null;
+}
+
 module.exports = function merge(target, source) {
   if (source === undefined) {
     return target;
   }
 
-  if (
-    target === null ||
-    source === null ||
-    typeof target !== "object" ||
-    typeof source !== "object"
-  ) {
+  if (!isMergeable(target) || !isMergeable(source)) {
     return source;
   }
 
