@@ -1,0 +1,4 @@
+# keep node_modules in sync with the lockfile
+if ! git diff --quiet ORIG_HEAD HEAD -- package-lock.json; then
+  npm ci
+fi

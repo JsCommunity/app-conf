@@ -1,0 +1,4 @@
+# keep node_modules in sync with the lockfile ($3 = 1: branch checkout)
+if [ "$3" = 1 ] && ! git diff --quiet "$1" "$2" -- package-lock.json; then
+  npm ci
+fi
