@@ -13,14 +13,11 @@ const entries = require("./_entries");
 const merge = require("./_merge");
 const pMap = require("./_pMap");
 const readFile = require("./_readFile");
+const { listEnvVars, listFiles } = require("./_sources");
 const UnknownFormatError = require("./_unknown-format-error");
 const unserialize = require("./_serializers").unserialize;
 
 // ===================================================================
-
-function deriveEnvPrefix(appName) {
-  return appName.toUpperCase().replace(/[^A-Z0-9]/g, "_") + "_";
-}
 
 function parseEnvJson(key, json) {
   try {
@@ -30,22 +27,19 @@ function parseEnvJson(key, json) {
   }
 }
 
-function readEnvOverrides(prefix) {
+function readEnvOverrides(vars) {
   const result = {};
-  for (const [key, value] of Object.entries(process.env)) {
-    if (!key.startsWith(prefix)) continue;
-    const parts = key.slice(prefix.length).split("__");
-    if (parts.some((_) => _ === "")) continue;
+  for (const { name, keys, value } of vars) {
     let obj = result;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if (obj[part] === null || typeof obj[part] !== "object") {
-        obj[part] = {};
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i];
+      if (obj[key] === null || typeof obj[key] !== "object") {
+        obj[key] = {};
       }
-      obj = obj[part];
+      obj = obj[key];
     }
-    obj[parts[parts.length - 1]] = value.startsWith("json:")
-      ? parseEnvJson(key, value.slice(5))
+    obj[keys[keys.length - 1]] = value.startsWith("json:")
+      ? parseEnvJson(name, value.slice(5))
       : value;
   }
   return result;
@@ -85,33 +79,20 @@ function load(appName, opts = {}) {
     ignoreUnknownFormats = false,
     serializers: customSerializers,
   } = opts;
-  let { entries: whitelist } = opts;
-  const useWhitelist = whitelist !== undefined;
-  if (useWhitelist) {
-    whitelist = new Set(whitelist);
-  }
-  const entryOpts = { appDir, appName };
-  return pMap(entries, (entry) => {
-    if (useWhitelist && !whitelist.has(entry.name)) {
-      return [];
-    }
-
-    const dirFn = entry.dir;
-    const dir = typeof dirFn === "function" ? dirFn(entryOpts) : dirFn;
-    return entry.list(entryOpts, dir) || [];
-  })
-    .then((files) => {
-      files = files.flat();
-      return pMap(files, async (file) => {
+  const whitelist =
+    opts.entries === undefined ? undefined : new Set(opts.entries);
+  return listFiles({ appDir, appName }, whitelist)
+    .then((files) =>
+      pMap(files, async ({ path }) => {
         try {
-          return await parse(file, { serializers: customSerializers });
+          return await parse(path, { serializers: customSerializers });
         } catch (error) {
           if (!(ignoreUnknownFormats && error instanceof UnknownFormatError)) {
             throw error;
           }
         }
-      });
-    })
+      }),
+    )
     .then((data) => {
       const config = data.reduce(
         (acc, cfg) => {
@@ -123,11 +104,10 @@ function load(appName, opts = {}) {
         defaults === undefined ? {} : structuredClone(defaults),
       );
 
-      if (envPrefix !== false && (!useWhitelist || whitelist.has("env"))) {
-        const prefix =
-          envPrefix !== undefined ? envPrefix : deriveEnvPrefix(appName);
-        merge(config, readEnvOverrides(prefix));
-      }
+      merge(
+        config,
+        readEnvOverrides(listEnvVars({ appName, envPrefix }, whitelist)),
+      );
 
       return config;
     });
