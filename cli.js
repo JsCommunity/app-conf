@@ -47,6 +47,7 @@ async function main(args) {
     _: [],
     envPrefix: undefined,
     help: false,
+    ignoreUnknownFormats: false,
     paths: [],
     watch: false,
   };
@@ -59,6 +60,8 @@ async function main(args) {
         useJson = true;
       } else if (arg === "-w" || arg === "--watch") {
         cliOpts.watch = true;
+      } else if (arg === "--ignore-unknown-formats") {
+        cliOpts.ignoreUnknownFormats = true;
       } else if (arg === "--no-env") {
         cliOpts.envPrefix = false;
       } else if (arg === "--env-prefix") {
@@ -83,7 +86,7 @@ async function main(args) {
 
   if (cliOpts._.length === 0 || cliOpts.help) {
     const { name, version } = require("./package.json");
-    return stdout.write(`Usage: ${name} [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [-p <path>]... <appName> [<appDir>]
+    return stdout.write(`Usage: ${name} [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [-p <path>]... <appName> [<appDir>]
 
 ${name} v${version}
 `);
@@ -95,7 +98,7 @@ ${name} v${version}
     appDir,
     appName,
     envPrefix: cliOpts.envPrefix,
-    ignoreUnknownFormats: true,
+    ignoreUnknownFormats: cliOpts.ignoreUnknownFormats,
     initialLoad: true,
   };
   const printPaths = print.bind(undefined, cliOpts.paths);

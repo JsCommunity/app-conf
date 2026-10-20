@@ -195,7 +195,7 @@ A basic CLI is available to show the config:
 
 ```
 > ./node_modules/.bin/app-conf
-Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [-p <path>]... <appName> [<appDir>]
+Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [-p <path>]... <appName> [<appDir>]
 
 > ./node_modules/.bin/app-conf my-app .
 ```
@@ -203,6 +203,8 @@ Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] 
 The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or, when repeated, an object keyed by each path.
 
 Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env` to disable env var overrides entirely.
+
+Like `load()`, the CLI fails on config files in an unknown format (e.g. `config.json.bak`, or `config.toml` without `smol-toml` installed); pass `--ignore-unknown-formats` if the application uses the `ignoreUnknownFormats` option.
 
 > Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your application directory and not from a global install.
 

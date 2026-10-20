@@ -47,6 +47,28 @@ describe("cli", function () {
     assert.match(stderr, /FATAL/);
   });
 
+  describe("unknown formats", function () {
+    beforeEach(async function () {
+      await writeFile(join(root, "config.json"), '{ "port": 80 }');
+      await writeFile(join(root, "config.json.bak"), "");
+    });
+
+    it("fail like the library does by default", async function () {
+      const { code, stderr } = await run([]);
+      assert.strictEqual(code, 1);
+      assert.match(
+        stderr,
+        /no compatible format found for .*config\.json\.bak/,
+      );
+    });
+
+    it("are skipped with --ignore-unknown-formats", async function () {
+      const { code, stdout } = await run(["--ignore-unknown-formats"]);
+      assert.strictEqual(code, 0);
+      assert.deepStrictEqual(JSON.parse(stdout), { port: 80 });
+    });
+  });
+
   describe("-p", function () {
     beforeEach(async function () {
       await writeFile(

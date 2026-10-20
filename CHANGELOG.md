@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Breaking changes
+
+- **CLI:** config files in an unknown format make it fail, like `load()` does by default, instead of being silently skipped; pass `--ignore-unknown-formats` for the previous behavior.
+
 ### Fixed
 
 - **CLI:** exits with code 1 on failure.
