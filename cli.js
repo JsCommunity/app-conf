@@ -107,4 +107,7 @@ ${name} v${version}
     printPaths(await load(appName, opts));
   }
 }
-main(process.argv.slice(2)).catch(console.error.bind(console, "FATAL:"));
+main(process.argv.slice(2)).catch((error) => {
+  console.error("FATAL:", error);
+  process.exitCode = 1;
+});

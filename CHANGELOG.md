@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **CLI:** exits with code 1 on failure.
+
 ## 5.0.0 (2026-10-14)
 
 ### Breaking changes
