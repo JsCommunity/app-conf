@@ -220,7 +220,7 @@ Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env
 
 **Default values belong in vendor config, not in code.** Hardcoding defaults directly in application code hides them from operators and makes them impossible to override without patching the source. Putting defaults in a `config.*` file shipped alongside the application keeps them visible, self-documenting, and overridable by any higher-priority layer.
 
-**Objects are merged deeply; scalars replace.** When two layers both define a nested object (e.g. `database: { host, port }`), their keys are merged rather than one object clobbering the other. A layer only needs to specify the keys it cares about. Scalar values (strings, numbers, booleans, arrays) replace unconditionally — there is no array-append semantic, which keeps the mental model simple and predictable.
+**Objects and arrays are merged deeply; other values replace.** When two layers both define a nested object (e.g. `database: { host, port }`), their keys are merged rather than one object clobbering the other. A layer only needs to specify the keys it cares about. Arrays are merged the same way, by index, so a layer can override a single element (e.g. `MY_APP_hosts__1=db2`); there is no append semantic. Everything else (strings, numbers, booleans, dates, class instances) replaces unconditionally.
 
 **Environment variables always win.** Following [12-factor app](https://12factor.net/config) practice, env vars are applied last and cannot be overridden by any file. This makes containerised deployments and CI pipelines predictable: injecting `MY_APP_port=8080` into the environment is enough, regardless of what any config file says.
 
