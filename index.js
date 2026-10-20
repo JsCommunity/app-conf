@@ -11,6 +11,7 @@ const debug = require("debug")("app-conf");
 
 const entries = require("./_entries");
 const merge = require("./_merge");
+const parseValue = require("./_parseValue");
 const pMap = require("./_pMap");
 const readFile = require("./_readFile");
 const { listEnvVars, listFiles } = require("./_sources");
@@ -18,14 +19,6 @@ const UnknownFormatError = require("./_unknown-format-error");
 const unserialize = require("./_serializers").unserialize;
 
 // ===================================================================
-
-function parseEnvJson(key, json) {
-  try {
-    return JSON.parse(json);
-  } catch (cause) {
-    throw new Error("invalid JSON in " + key, { cause });
-  }
-}
 
 function readEnvOverrides(vars) {
   const result = {};
@@ -38,9 +31,7 @@ function readEnvOverrides(vars) {
       }
       obj = obj[key];
     }
-    obj[keys[keys.length - 1]] = value.startsWith("json:")
-      ? parseEnvJson(name, value.slice(5))
-      : value;
+    obj[keys[keys.length - 1]] = parseValue(name, value);
   }
   return result;
 }
