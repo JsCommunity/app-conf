@@ -14,11 +14,19 @@ const { stdout } = process;
 
 let useJson = !stdout.isTTY;
 
+function getPath(config, path) {
+  const value = path.split(".").reduce((o, k) => o?.[k], config);
+  if (value === undefined) {
+    throw new Error("no value at " + path);
+  }
+  return value;
+}
+
 function print(paths, config) {
   if (paths.length !== 0) {
     config =
       paths.length === 1
-        ? paths[0].split(".").reduce((o, k) => o?.[k], config)
+        ? getPath(config, paths[0])
         : Object.fromEntries(
             paths.filter((k) => k in config).map((k) => [k, config[k]]),
           );
@@ -101,7 +109,11 @@ ${name} v${version}
         console.warn(error);
         return;
       }
-      printPaths(config);
+      try {
+        printPaths(config);
+      } catch (error) {
+        console.warn(error.message);
+      }
     });
   } else {
     printPaths(await load(appName, opts));

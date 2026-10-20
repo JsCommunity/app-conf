@@ -46,4 +46,19 @@ describe("cli", function () {
     assert.strictEqual(code, 1);
     assert.match(stderr, /FATAL/);
   });
+
+  describe("-p", function () {
+    beforeEach(async function () {
+      await writeFile(
+        join(root, "config.json"),
+        '{ "db": { "host": "h", "pool": 2 }, "port": 80 }',
+      );
+    });
+
+    it("fails on a missing path", async function () {
+      const { code, stderr } = await run(["-p", "db.nope"]);
+      assert.strictEqual(code, 1);
+      assert.match(stderr, /no value at db\.nope/);
+    });
+  });
 });

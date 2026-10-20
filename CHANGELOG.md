@@ -5,6 +5,7 @@
 ### Fixed
 
 - **CLI:** exits with code 1 on failure.
+- **CLI:** `-p` with a missing path reports `no value at <path>` instead of crashing in JSON mode.
 
 ## 5.0.0 (2026-10-14)
 
