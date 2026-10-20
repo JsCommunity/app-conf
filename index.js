@@ -22,6 +22,14 @@ function deriveEnvPrefix(appName) {
   return appName.toUpperCase().replace(/[^A-Z0-9]/g, "_") + "_";
 }
 
+function parseEnvJson(key, json) {
+  try {
+    return JSON.parse(json);
+  } catch (cause) {
+    throw new Error("invalid JSON in " + key, { cause });
+  }
+}
+
 function readEnvOverrides(prefix) {
   const result = {};
   for (const [key, value] of Object.entries(process.env)) {
@@ -37,7 +45,7 @@ function readEnvOverrides(prefix) {
       obj = obj[part];
     }
     obj[parts[parts.length - 1]] = value.startsWith("json:")
-      ? JSON.parse(value.slice(5))
+      ? parseEnvJson(key, value.slice(5))
       : value;
   }
   return result;
