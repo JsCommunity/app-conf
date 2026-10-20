@@ -60,5 +60,10 @@ describe("cli", function () {
       assert.strictEqual(code, 1);
       assert.match(stderr, /no value at db\.nope/);
     });
+
+    it("supports dotted paths when repeated", async function () {
+      const { stdout } = await run(["-p", "db.pool", "-p", "port"]);
+      assert.deepStrictEqual(JSON.parse(stdout), { "db.pool": 2, port: 80 });
+    });
   });
 });

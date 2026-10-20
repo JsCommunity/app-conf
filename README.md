@@ -200,7 +200,7 @@ Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] 
 > ./node_modules/.bin/app-conf my-app .
 ```
 
-The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or a subset of the configuration. Only top-level keys are supported when multiple `-p` flags are used.
+The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or, when repeated, an object keyed by each path.
 
 Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env` to disable env var overrides entirely.
 

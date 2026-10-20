@@ -6,6 +6,7 @@
 
 - **CLI:** exits with code 1 on failure.
 - **CLI:** `-p` with a missing path reports `no value at <path>` instead of crashing in JSON mode.
+- **CLI:** repeated `-p` accept dotted paths instead of silently dropping them; a missing path is reported instead of omitted.
 
 ## 5.0.0 (2026-10-14)
 

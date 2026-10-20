@@ -27,9 +27,7 @@ function print(paths, config) {
     config =
       paths.length === 1
         ? getPath(config, paths[0])
-        : Object.fromEntries(
-            paths.filter((k) => k in config).map((k) => [k, config[k]]),
-          );
+        : Object.fromEntries(paths.map((p) => [p, getPath(config, p)]));
   }
 
   stdout.write(
