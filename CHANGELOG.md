@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### Breaking changes
+
+- **CLI:** config files in an unknown format make it fail, like `load()` does by default, instead of being silently skipped; pass `--ignore-unknown-formats` for the previous behavior.
+
+### Added
+
+- **CLI:** `--sources` lists the files and env vars the config is loaded from, in merge order, with the files that fail to load and why.
+
+### Fixed
+
+- **CLI:** exits with code 1 on failure.
+- **CLI:** `-p` with a missing path reports `no value at <path>` instead of crashing in JSON mode.
+- **CLI:** repeated `-p` accept dotted paths instead of silently dropping them; a missing path is reported instead of omitted.
+- A malformed `json:` env value fails with `invalid JSON in <VAR>` (the parse error as `cause`) instead of a bare `SyntaxError`.
+
 ## 5.0.0 (2026-10-14)
 
 ### Breaking changes

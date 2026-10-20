@@ -21,6 +21,7 @@
     "_entries.js",
     "_merge.js",
     "_pMap.js",
+    "_sources.js",
     "_readFile.js",
     "_serializers.js",
     "_unknown-format-error.js",

@@ -213,7 +213,12 @@ describe("appConf", function () {
 
       it("throws on malformed json: values", function () {
         process.env.TEST_APP_CONF_bad = "json:[invalid";
-        return assert.rejects(() => loadConfig("test-app-conf"));
+        return assert.rejects(
+          () => loadConfig("test-app-conf"),
+          (error) =>
+            error.message === "invalid JSON in TEST_APP_CONF_bad" &&
+            error.cause instanceof SyntaxError,
+        );
       });
 
       it("disables env overrides when 'env' is excluded from entries", function () {

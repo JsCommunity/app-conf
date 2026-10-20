@@ -195,14 +195,27 @@ A basic CLI is available to show the config:
 
 ```
 > ./node_modules/.bin/app-conf
-Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [-p <path>]... <appName> [<appDir>]
+Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [--sources | -p <path>...] <appName> [<appDir>]
 
 > ./node_modules/.bin/app-conf my-app .
 ```
 
-The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or a subset of the configuration. Only top-level keys are supported when multiple `-p` flags are used.
+Use `--sources` to list, instead of the config, the files and env vars it is loaded from, in merge order, with the files that fail to load and why (env var values are not printed, they may be secrets):
+
+```
+> ./node_modules/.bin/app-conf --sources my-app .
+vendor /app/config.json
+global /home/me/.config/my-app/config.json
+global /home/me/.config/my-app/config.json.bak  (error: unknown format)
+local  /home/me/project/.my-app.json  (error: Unexpected end of JSON input)
+env    MY_APP_db__host
+```
+
+The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or, when repeated, an object keyed by each path.
 
 Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env` to disable env var overrides entirely.
+
+Like `load()`, the CLI fails on config files in an unknown format (e.g. `config.json.bak`, or `config.toml` without `smol-toml` installed); pass `--ignore-unknown-formats` if the application uses the `ignoreUnknownFormats` option.
 
 > Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your application directory and not from a global install.
 
@@ -220,7 +233,7 @@ Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env
 
 **Default values belong in vendor config, not in code.** Hardcoding defaults directly in application code hides them from operators and makes them impossible to override without patching the source. Putting defaults in a `config.*` file shipped alongside the application keeps them visible, self-documenting, and overridable by any higher-priority layer.
 
-**Objects are merged deeply; scalars replace.** When two layers both define a nested object (e.g. `database: { host, port }`), their keys are merged rather than one object clobbering the other. A layer only needs to specify the keys it cares about. Scalar values (strings, numbers, booleans, arrays) replace unconditionally — there is no array-append semantic, which keeps the mental model simple and predictable.
+**Objects and arrays are merged deeply; other values replace.** When two layers both define a nested object (e.g. `database: { host, port }`), their keys are merged rather than one object clobbering the other. A layer only needs to specify the keys it cares about. Arrays are merged the same way, by index, so a layer can override a single element (e.g. `MY_APP_hosts__1=db2`); there is no append semantic. Everything else (strings, numbers, booleans, dates, class instances) replaces unconditionally.
 
 **Environment variables always win.** Following [12-factor app](https://12factor.net/config) practice, env vars are applied last and cannot be overridden by any file. This makes containerised deployments and CI pipelines predictable: injecting `MY_APP_port=8080` into the environment is enough, regardless of what any config file says.
 
