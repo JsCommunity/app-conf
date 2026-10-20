@@ -8,6 +8,7 @@
 
 ### Added
 
+- **CLI:** `--set` and `--unset` override values of the existing config files, without editing them, in the `config.~override.json` file of the global config.
 - **CLI:** `--sources` lists the files and env vars the config is loaded from, in merge order, with the files that fail to load and why.
 
 ### Fixed

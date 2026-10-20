@@ -196,6 +196,7 @@ A basic CLI is available to show the config:
 ```
 > ./node_modules/.bin/app-conf
 Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [--sources | -p <path>...] <appName> [<appDir>]
+       app-conf (--set <path>=<value> | --unset <path>)... <appName>
 
 > ./node_modules/.bin/app-conf my-app .
 ```
@@ -216,6 +217,21 @@ The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a si
 Use `--env-prefix <prefix>` to override the derived env var prefix, or `--no-env` to disable env var overrides entirely.
 
 Like `load()`, the CLI fails on config files in an unknown format (e.g. `config.json.bak`, or `config.toml` without `smol-toml` installed); pass `--ignore-unknown-formats` if the application uses the `ignoreUnknownFormats` option.
+
+Use `--set` and `--unset` to override values of the existing config files, without editing them, and to remove these overrides:
+
+```
+> ./node_modules/.bin/app-conf --set db.port=json:5433 --set db.host=db2 my-app
+written /home/me/.config/my-app/config.~override.json
+> ./node_modules/.bin/app-conf --unset db.port --unset db.host my-app
+deleted /home/me/.config/my-app/config.~override.json
+```
+
+- Values are strings, prefix them with `json:` for other types, like env vars.
+- They are written in the `config.~override.json` file of the global config, whose name sorts after the other files of this directory so it takes precedence over them; local config and env vars still take precedence over it.
+- Objects left empty by `--unset` are removed, and the file is deleted when empty.
+- Like any config value: arrays are merged by index (`--set hosts=json:["x"]` over `["a", "b"]` gives `["x", "b"]`) and relative paths are resolved from the file's directory.
+- With zsh's `EXTENDED_GLOB` option, `~` is a pattern operator: quote the file name.
 
 > Note: To ensure the configuration is parsed the same way as your application (e.g. optional formats), this command should be run from your application directory and not from a global install.
 
