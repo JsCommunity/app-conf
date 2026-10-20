@@ -5,7 +5,7 @@
 ## Usage
 
 The following files are looked up and merged (the latest take
-precedence):
+precedence; files of the same directory are merged in name order):
 
 1. **vendor**: `config.*` in the application directory;
 1. **system**: `/etc/my-application/config.*`;

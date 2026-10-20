@@ -12,6 +12,7 @@
 
 ### Fixed
 
+- Files of the same directory are merged in name order on all platforms (it depended on the file system on Windows).
 - **CLI:** exits with code 1 on failure.
 - **CLI:** `-p` with a missing path reports `no value at <path>` instead of crashing in JSON mode.
 - **CLI:** repeated `-p` accept dotted paths instead of silently dropping them; a missing path is reported instead of omitted.

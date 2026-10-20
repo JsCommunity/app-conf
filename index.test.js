@@ -107,6 +107,18 @@ describe("appConf", function () {
       });
     });
 
+    it("merges the files of a directory in name order", function () {
+      mock({
+        "/etc/test-app-conf/config.~b.json": '{ "foo": "~b" }',
+        "/etc/test-app-conf/config.a.json": '{ "foo": "a" }',
+      });
+      return loadConfig("test-app-conf", { entries: ["system"] }).then(
+        function (config) {
+          assert.deepStrictEqual(config, { foo: "~b" });
+        },
+      );
+    });
+
     describe("unknown formats", function () {
       beforeEach(function () {
         mock({
