@@ -5,7 +5,14 @@
 const { afterEach, beforeEach, describe, it } = require("node:test");
 const assert = require("assert");
 const { execFile } = require("node:child_process");
-const { mkdir, mkdtemp, rm, writeFile } = require("node:fs/promises");
+const {
+  access,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} = require("node:fs/promises");
 const { tmpdir } = require("os");
 const { join } = require("path");
 
@@ -141,5 +148,79 @@ describe("cli", function () {
       const { stdout } = await run(["-p", "db.pool", "-p", "port"]);
       assert.deepStrictEqual(JSON.parse(stdout), { "db.pool": 2, port: 80 });
     });
+  });
+  describe("--set and --unset", function () {
+    let file;
+    beforeEach(function () {
+      file = join(root, appName, "config.~override.json");
+    });
+    const readOverrides = async () => JSON.parse(await readFile(file, "utf8"));
+
+    it("create the file with typed values", async function () {
+      const { code, stdout } = await run([
+        "--set",
+        "db.port=json:5433",
+        "--set",
+        "db.host=a=b",
+      ]);
+      assert.strictEqual(code, 0);
+      assert.strictEqual(stdout, `written ${file}\n`);
+      assert.deepStrictEqual(await readOverrides(), {
+        db: { port: 5433, host: "a=b" },
+      });
+    });
+
+    it("override the other files of the global entry", async function () {
+      await mkdir(join(root, appName));
+      await writeFile(join(root, appName, "config.zz.json"), '{ "port": 1 }');
+      await run(["--set", "port=json:2"]);
+      const { stdout } = await run([]);
+      assert.deepStrictEqual(JSON.parse(stdout), { port: 2 });
+    });
+
+    it("keep the existing values as written", async function () {
+      await mkdir(join(root, appName));
+      await writeFile(file, '{ "dir": "./data", "a": "scalar" }');
+      await run(["--set", "a.b=1"]);
+      assert.deepStrictEqual(await readOverrides(), {
+        dir: "./data",
+        a: { b: "1" },
+      });
+    });
+
+    it("prune the objects left empty", async function () {
+      await run(["--set", "a.b.c=1", "--set", "x=1"]);
+      await run(["--unset", "a.b.c"]);
+      assert.deepStrictEqual(await readOverrides(), { x: "1" });
+    });
+
+    it("delete the file when empty", async function () {
+      await run(["--set", "a.b=1"]);
+      const { code, stdout } = await run(["--unset", "a.b"]);
+      assert.strictEqual(code, 0);
+      assert.strictEqual(stdout, `deleted ${file}\n`);
+      await assert.rejects(access(file), { code: "ENOENT" });
+    });
+
+    it("ignore an absent path", async function () {
+      await run(["--set", "a=1"]);
+      const { code } = await run(["--unset", "a.b", "--unset", "c"]);
+      assert.strictEqual(code, 0);
+      assert.deepStrictEqual(await readOverrides(), { a: "1" });
+    });
+
+    for (const args of [
+      ["--set", "__proto__.x=1"],
+      ["--set", "a..b=1"],
+      ["--set", "a"],
+      ["--unset", ".a"],
+      ["--set", "a=1", "-p", "a"],
+    ]) {
+      it("reject " + args.join(" "), async function () {
+        const { code } = await run(args);
+        assert.strictEqual(code, 1);
+        await assert.rejects(access(file), { code: "ENOENT" });
+      });
+    }
   });
 });

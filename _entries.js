@@ -24,8 +24,10 @@ async function listFiles(dir, prefix) {
     throw error;
   }
 
+  // libuv sorts on Unix but not on Windows, sort for a merge order everywhere
   const paths = names
     .filter((name) => name.startsWith(prefix))
+    .sort()
     .map((name) => j(dir, name));
   const isFile = await pMap(paths, (path) =>
     stat(path).then(
