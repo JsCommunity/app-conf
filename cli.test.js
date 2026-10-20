@@ -5,7 +5,7 @@
 const { afterEach, beforeEach, describe, it } = require("node:test");
 const assert = require("assert");
 const { execFile } = require("node:child_process");
-const { mkdtemp, rm, writeFile } = require("node:fs/promises");
+const { mkdir, mkdtemp, rm, writeFile } = require("node:fs/promises");
 const { tmpdir } = require("os");
 const { join } = require("path");
 
@@ -66,6 +66,60 @@ describe("cli", function () {
       const { code, stdout } = await run(["--ignore-unknown-formats"]);
       assert.strictEqual(code, 0);
       assert.deepStrictEqual(JSON.parse(stdout), { port: 80 });
+    });
+  });
+
+  describe("--sources", function () {
+    beforeEach(async function () {
+      await writeFile(join(root, "config.json"), "{}");
+      await mkdir(join(root, appName));
+      await writeFile(join(root, appName, "config.json.bak"), "");
+      await writeFile(join(root, `.${appName}.json`), "{");
+    });
+
+    it("lists files in merge order, then env vars", async function () {
+      const { code, stdout } = await run(["--sources"], {
+        TEST_APP_CONF_CLI_port: "secret",
+      });
+      assert.strictEqual(code, 1);
+      const sources = JSON.parse(stdout);
+      // the message depends on the Node version
+      assert.match(sources[2].reason, /JSON/);
+      assert.deepStrictEqual(sources, [
+        {
+          entry: "vendor",
+          source: join(root, "config.json"),
+          status: "loaded",
+        },
+        {
+          entry: "global",
+          source: join(root, appName, "config.json.bak"),
+          status: "error",
+          reason: "unknown format",
+        },
+        {
+          entry: "local",
+          source: join(root, `.${appName}.json`),
+          status: "error",
+          reason: sources[2].reason,
+        },
+        { entry: "env", source: "TEST_APP_CONF_CLI_port", status: "loaded" },
+      ]);
+    });
+
+    it("marks unknown formats as skipped with --ignore-unknown-formats", async function () {
+      await writeFile(join(root, `.${appName}.json`), "{}");
+      const { code, stdout } = await run([
+        "--sources",
+        "--ignore-unknown-formats",
+      ]);
+      assert.strictEqual(code, 0);
+      assert.deepStrictEqual(JSON.parse(stdout)[1], {
+        entry: "global",
+        source: join(root, appName, "config.json.bak"),
+        status: "skipped",
+        reason: "unknown format",
+      });
     });
   });
 

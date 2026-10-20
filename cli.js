@@ -7,7 +7,9 @@ if (env.DEBUG === undefined) {
   env.DEBUG = "*";
 }
 
-const { load, watch } = require("./index.js");
+const { load, parse, UnknownFormatError, watch } = require("./index.js");
+const pMap = require("./_pMap.js");
+const { listEnvVars, listFiles } = require("./_sources.js");
 const { inspect } = require("util");
 
 const { stdout } = process;
@@ -42,6 +44,48 @@ function print(paths, config) {
   stdout.write("\n");
 }
 
+// Prints the sources load() reads, in merge order, without env var values.
+async function printSources(opts) {
+  const sources = await pMap(listFiles(opts), async ({ entry, path }) => {
+    try {
+      await parse(path);
+      return { entry, source: path, status: "loaded" };
+    } catch (error) {
+      const unknownFormat = error instanceof UnknownFormatError;
+      return {
+        entry,
+        source: path,
+        status:
+          unknownFormat && opts.ignoreUnknownFormats ? "skipped" : "error",
+        reason: unknownFormat
+          ? "unknown format"
+          : (error.cause ?? error).message,
+      };
+    }
+  });
+  for (const { name } of listEnvVars(opts)) {
+    sources.push({ entry: "env", source: name, status: "loaded" });
+  }
+
+  if (sources.some((_) => _.status === "error")) {
+    process.exitCode = 1;
+  }
+
+  stdout.write(
+    useJson
+      ? JSON.stringify(sources, null, 2) + "\n"
+      : sources
+          .map(
+            ({ entry, source, status, reason }) =>
+              entry.padEnd(7) +
+              source +
+              (status === "loaded" ? "" : `  (${status}: ${reason})`) +
+              "\n",
+          )
+          .join(""),
+  );
+}
+
 async function main(args) {
   const cliOpts = {
     _: [],
@@ -49,6 +93,7 @@ async function main(args) {
     help: false,
     ignoreUnknownFormats: false,
     paths: [],
+    sources: false,
     watch: false,
   };
   for (let i = 0, n = args.length; i < n;) {
@@ -60,6 +105,8 @@ async function main(args) {
         useJson = true;
       } else if (arg === "-w" || arg === "--watch") {
         cliOpts.watch = true;
+      } else if (arg === "--sources") {
+        cliOpts.sources = true;
       } else if (arg === "--ignore-unknown-formats") {
         cliOpts.ignoreUnknownFormats = true;
       } else if (arg === "--no-env") {
@@ -86,7 +133,7 @@ async function main(args) {
 
   if (cliOpts._.length === 0 || cliOpts.help) {
     const { name, version } = require("./package.json");
-    return stdout.write(`Usage: ${name} [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [-p <path>]... <appName> [<appDir>]
+    return stdout.write(`Usage: ${name} [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [--sources | -p <path>...] <appName> [<appDir>]
 
 ${name} v${version}
 `);
@@ -103,7 +150,9 @@ ${name} v${version}
   };
   const printPaths = print.bind(undefined, cliOpts.paths);
 
-  if (cliOpts.watch) {
+  if (cliOpts.sources) {
+    await printSources(opts);
+  } else if (cliOpts.watch) {
     await watch(opts, (error, config) => {
       console.log("--", new Date());
       if (error !== undefined) {

@@ -6,6 +6,10 @@
 
 - **CLI:** config files in an unknown format make it fail, like `load()` does by default, instead of being silently skipped; pass `--ignore-unknown-formats` for the previous behavior.
 
+### Added
+
+- **CLI:** `--sources` lists the files and env vars the config is loaded from, in merge order, with the files that fail to load and why.
+
 ### Fixed
 
 - **CLI:** exits with code 1 on failure.

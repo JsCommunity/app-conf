@@ -195,9 +195,20 @@ A basic CLI is available to show the config:
 
 ```
 > ./node_modules/.bin/app-conf
-Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [-p <path>]... <appName> [<appDir>]
+Usage: app-conf [--json | -j] [--watch | -w] [--env-prefix <prefix> | --no-env] [--ignore-unknown-formats] [--sources | -p <path>...] <appName> [<appDir>]
 
 > ./node_modules/.bin/app-conf my-app .
+```
+
+Use `--sources` to list, instead of the config, the files and env vars it is loaded from, in merge order, with the files that fail to load and why (env var values are not printed, they may be secrets):
+
+```
+> ./node_modules/.bin/app-conf --sources my-app .
+vendor /app/config.json
+global /home/me/.config/my-app/config.json
+global /home/me/.config/my-app/config.json.bak  (error: unknown format)
+local  /home/me/project/.my-app.json  (error: Unexpected end of JSON input)
+env    MY_APP_db__host
 ```
 
 The `-p` flag accepts dot-notation paths (e.g. `-p database.host`) to print a single value or, when repeated, an object keyed by each path.
